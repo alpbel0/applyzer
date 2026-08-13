@@ -7,6 +7,7 @@ Linkler: {{linkler}}
 Kendini tanıt: {{kendini_tanit}}
 LLM/agent deneyimin: {{llm_deneyimi}}
 Ofise gelebileceği gün sayısı: {{ofis_gun}}
+Konum ve çalışma düzeni notu: {{konum_notu}}
 </form_data>
 
 <cv_file>

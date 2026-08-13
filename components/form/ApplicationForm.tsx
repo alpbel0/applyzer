@@ -21,7 +21,8 @@ type TextFieldName =
   | "links"
   | "self_introduction"
   | "llm_experience"
-  | "office_days_per_week";
+  | "office_days_per_week"
+  | "location_note";
 
 const fieldSchemas: Record<TextFieldName, z.ZodType> = {
   full_name: applicationFormSchema.shape.full_name,
@@ -32,6 +33,7 @@ const fieldSchemas: Record<TextFieldName, z.ZodType> = {
   self_introduction: applicationFormSchema.shape.self_introduction,
   llm_experience: applicationFormSchema.shape.llm_experience,
   office_days_per_week: applicationFormSchema.shape.office_days_per_week,
+  location_note: applicationFormSchema.shape.location_note,
 };
 
 function firstError(errors: FieldErrors, field: string) {
@@ -57,6 +59,7 @@ export function ApplicationForm() {
   const router = useRouter();
   const [selfIntroduction, setSelfIntroduction] = useState("");
   const [llmExperience, setLlmExperience] = useState("");
+  const [locationNote, setLocationNote] = useState("");
   const [cv, setCv] = useState<File | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -90,6 +93,7 @@ export function ApplicationForm() {
       self_introduction: formData.get("self_introduction"),
       llm_experience: formData.get("llm_experience"),
       office_days_per_week: formData.get("office_days_per_week"),
+      location_note: formData.get("location_note"),
       privacy_consent: formData.get("privacy_consent") === "true",
       cv: cv ? { name: cv.name, size: cv.size, type: cv.type } : undefined,
     };
@@ -394,6 +398,40 @@ export function ApplicationForm() {
               <FieldError errors={errors} field="office_days_per_week" />
             </div>
             <OfficeLocationModal />
+          </div>
+
+          <div>
+            <div className="flex items-end justify-between gap-4">
+              <label className="form-label" htmlFor="location_note">
+                Konum ve çalışma düzeni notu{" "}
+                <span className="form-optional">Opsiyonel</span>
+              </label>
+              <CharCounter current={locationNote.length} maximum={300} />
+            </div>
+            <textarea
+              id="location_note"
+              name="location_note"
+              rows={3}
+              maxLength={300}
+              placeholder="Örn. Şu an İstanbul’dayım; kabul edilirsem Ankara’ya taşınabilirim."
+              className={inputState(errors, "location_note")}
+              value={locationNote}
+              aria-invalid={Boolean(firstError(errors, "location_note"))}
+              aria-describedby={
+                firstError(errors, "location_note")
+                  ? "location_note-error"
+                  : "location_note-hint"
+              }
+              onChange={(event) => setLocationNote(event.target.value)}
+              onBlur={(event) =>
+                validateField("location_note", event.target.value)
+              }
+            />
+            <p id="location_note-hint" className="form-hint">
+              Farklı bir şehirdeysen, taşınma veya ofise geliş planını kısaca
+              paylaşabilirsin.
+            </p>
+            <FieldError errors={errors} field="location_note" />
           </div>
 
           <FileUpload

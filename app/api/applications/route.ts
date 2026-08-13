@@ -1,14 +1,8 @@
-import { createApplication } from "@/lib/db/applications";
-import { createSupabaseAdminClient } from "@/lib/db/client";
 import {
-  hasValidCvSignature,
-  sanitizeCvFileName,
-} from "@/lib/cv/validate-upload";
-import {
-  applicationFormSchema,
-  MAX_CV_SIZE_BYTES,
-} from "@/lib/schemas/application";
-import { scheduleApplicationProcessing } from "@/lib/worker/schedule";
+  ApplicationSubmissionError,
+  submitApplication,
+} from "@/lib/applications/submit";
+import { MAX_CV_SIZE_BYTES } from "@/lib/schemas/application";
 
 export const maxDuration = 300;
 
@@ -72,7 +66,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = applicationFormSchema.safeParse({
+  const form = {
     full_name: formData.get("full_name"),
     email: formData.get("email"),
     department_year: formData.get("department_year"),
@@ -82,76 +76,27 @@ export async function POST(request: Request) {
     self_introduction: formData.get("self_introduction"),
     llm_experience: formData.get("llm_experience"),
     office_days_per_week: formData.get("office_days_per_week"),
+    location_note: formData.get("location_note"),
     privacy_consent: formData.get("privacy_consent") === "true",
     cv: { name: cv.name, size: cv.size, type: cv.type },
-  });
-
-  if (!parsed.success) {
-    return errorResponse(
-      {
-        error: "Lütfen hatalı alanları kontrol edin.",
-        field_errors: parsed.error.flatten().fieldErrors,
-      },
-      400,
-    );
-  }
+  };
 
   const cvBytes = new Uint8Array(await cv.arrayBuffer());
-  if (!hasValidCvSignature(cvBytes, parsed.data.cv.type)) {
-    return errorResponse(
-      {
-        error: "CV içeriği geçerli bir PDF dosyası değil.",
-        field_errors: { cv: ["Dosya içeriği geçersiz."] },
-      },
-      415,
-    );
-  }
-
-  const applicationId = crypto.randomUUID();
-  const safeFileName = sanitizeCvFileName(cv.name);
-  const storagePath = `${applicationId}/${safeFileName}`;
-  const supabase = createSupabaseAdminClient();
-  const { error: uploadError } = await supabase.storage
-    .from("cvs")
-    .upload(storagePath, cvBytes, {
-      contentType: parsed.data.cv.type,
-      upsert: false,
-    });
-
-  if (uploadError) {
-    console.error("CV upload failed", uploadError);
-    return errorResponse(
-      { error: "CV yüklenemedi. Lütfen yeniden deneyin." },
-      500,
-    );
-  }
-
   try {
-    const application = await createApplication({
-      ...parsed.data,
-      id: applicationId,
-      cvFileName: cv.name,
-      cvStoragePath: storagePath,
-    });
-
-    scheduleApplicationProcessing(applicationId);
+    const application = await submitApplication({ form, cvBytes });
 
     return Response.json(
       { application_number: application.application_number },
       { status: 201 },
     );
   } catch (error) {
-    console.error("Application insert failed", error);
-    const { error: cleanupError } = await supabase.storage
-      .from("cvs")
-      .remove([storagePath]);
-    if (cleanupError) {
-      console.error("CV cleanup failed", cleanupError);
+    if (error instanceof ApplicationSubmissionError) {
+      return errorResponse(
+        { error: error.message, field_errors: error.fieldErrors },
+        error.status,
+      );
     }
-
-    return errorResponse(
-      { error: "Başvuru kaydedilemedi. Lütfen yeniden deneyin." },
-      500,
-    );
+    console.error("Unexpected application submission failure", error);
+    return errorResponse({ error: "Başvuru kaydedilemedi." }, 500);
   }
 }

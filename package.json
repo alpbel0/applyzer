@@ -10,15 +10,19 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run --passWithNoTests",
-    "verify:openrouter": "node --env-file=.env.local scripts/verify-openrouter.mjs"
+    "verify:openrouter": "node --env-file=.env.local scripts/verify-openrouter.mjs",
+    "verify:mcp": "node scripts/verify-mcp.mjs",
+    "verify:mcp:admin": "node --env-file=.env.local scripts/verify-mcp.mjs http://localhost:3000/api/mcp --admin"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
+    "@modelcontextprotocol/server": "2.0.0",
     "@mozilla/readability": "0.6.0",
     "@napi-rs/canvas": "0.1.80",
     "@supabase/supabase-js": "2.112.3",
     "fast-xml-parser": "5.10.1",
     "jsdom": "29.1.1",
+    "mcp-handler": "2.1.0",
     "next": "16.3.0",
     "openai": "7.4.0",
     "pdf-parse": "2.4.5",

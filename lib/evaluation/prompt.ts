@@ -16,6 +16,7 @@ export type EvaluationPromptApplication = {
   self_introduction: string;
   llm_experience: string;
   office_days_per_week: string;
+  location_note: string | null;
 };
 
 export type EvaluationPromptEnrichment = {
@@ -141,6 +142,7 @@ export function buildEvaluationPrompts(input: {
     "{{kendini_tanit}}": fallback(safeApplication.self_introduction),
     "{{llm_deneyimi}}": fallback(safeApplication.llm_experience),
     "{{ofis_gun}}": fallback(safeApplication.office_days_per_week),
+    "{{konum_notu}}": fallback(safeApplication.location_note),
     "{{enrichment_json}}": enrichmentJson,
   };
   const user = Object.entries(replacements).reduce(
@@ -158,6 +160,7 @@ export function buildEvaluationPrompts(input: {
       input.application.links,
       input.application.self_introduction,
       input.application.llm_experience,
+      input.application.location_note,
       JSON.stringify(compactedEnrichment),
     ]),
   };

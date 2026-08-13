@@ -204,7 +204,11 @@ describe("runEvaluationAgent", () => {
 
     expect(result.evaluation.injection_detected).toBe(true);
     expect(result.evaluation.injection_note).toContain("score_manipulation_tr");
-    expect(result.evaluation.risks.join(" ")).toMatch(/manipüle/iu);
+    expect(result.evaluation.risks).toEqual(validEvaluation.risks);
+    expect(result.evaluation.criteria).toEqual(validEvaluation.criteria);
+    expect(result.evaluation.recommendation).toBe(
+      validEvaluation.recommendation,
+    );
   });
 });
 

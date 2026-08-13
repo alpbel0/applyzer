@@ -24,6 +24,7 @@ export async function createApplication(input: CreateApplicationInput) {
       self_introduction: input.self_introduction,
       llm_experience: input.llm_experience,
       office_days_per_week: input.office_days_per_week,
+      location_note: input.location_note ?? null,
       consent_at: new Date().toISOString(),
       cv_storage_path: input.cvStoragePath,
       cv_file_name: input.cvFileName,

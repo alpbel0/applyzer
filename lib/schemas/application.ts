@@ -83,6 +83,15 @@ export const applicationInputSchema = z
     office_days_per_week: z.enum(OFFICE_DAY_OPTIONS, {
       error: "Geçerli bir ofis günü seçeneği seçin.",
     }),
+    location_note: optionalTrimmedText.pipe(
+      z
+        .string()
+        .max(
+          300,
+          "Konum ve çalışma düzeni notu en fazla 300 karakter olabilir.",
+        )
+        .optional(),
+    ),
     privacy_consent: z.literal(true, {
       error: "Başvuru için veri işleme onayı gerekli.",
     }),

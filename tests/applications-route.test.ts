@@ -29,6 +29,10 @@ function validFormData() {
   formData.set("self_introduction", "Yeni ürünler geliştirmeyi seviyorum.");
   formData.set("llm_experience", "Bir LLM API entegrasyonu geliştirdim.");
   formData.set("office_days_per_week", "3");
+  formData.set(
+    "location_note",
+    "İstanbul'dayım, kabul edilirsem Ankara'ya taşınabilirim.",
+  );
   formData.set("privacy_consent", "true");
   formData.set(
     "cv",
@@ -60,6 +64,12 @@ describe("POST /api/applications", () => {
     await expect(response.json()).resolves.toEqual({ application_number: 42 });
     expect(storageFrom).toHaveBeenCalledWith("cvs");
     expect(databaseFrom).toHaveBeenCalledWith("applications");
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        location_note:
+          "İstanbul'dayım, kabul edilirsem Ankara'ya taşınabilirim.",
+      }),
+    );
     expect(scheduleApplicationProcessing).toHaveBeenCalledTimes(1);
   });
 

@@ -29,6 +29,7 @@ import {
 } from "@/lib/schemas/evaluation";
 import {
   detectPromptInjection,
+  sanitizeUntrustedText,
   type InjectionDetection,
 } from "@/lib/evaluation/sanitize";
 import {
@@ -109,19 +110,31 @@ export function buildPdfDataUrl(cvBytes: Uint8Array) {
   return `data:application/pdf;base64,${Buffer.from(cvBytes).toString("base64")}`;
 }
 
-function userMessage(prompt: string, cvBytes: Uint8Array, cvFileName: string) {
+function userMessage(input: {
+  prompt: string;
+  cvBytes?: Uint8Array;
+  cvFileName?: string;
+  cvText?: string;
+}) {
+  const text = input.cvText
+    ? `${input.prompt}\n\n<cv_text>\n${sanitizeUntrustedText(input.cvText)}\n</cv_text>`
+    : input.prompt;
+  const content: Array<
+    | { type: "text"; text: string }
+    | { type: "file"; file: { filename: string; file_data: string } }
+  > = [{ type: "text", text }];
+  if (input.cvBytes && input.cvFileName) {
+    content.push({
+      type: "file",
+      file: {
+        filename: input.cvFileName,
+        file_data: buildPdfDataUrl(input.cvBytes),
+      },
+    });
+  }
   return {
     role: "user" as const,
-    content: [
-      { type: "text" as const, text: prompt },
-      {
-        type: "file" as const,
-        file: {
-          filename: cvFileName,
-          file_data: buildPdfDataUrl(cvBytes),
-        },
-      },
-    ],
+    content,
   } satisfies ChatMessage;
 }
 
@@ -149,18 +162,10 @@ function applyCodeInjectionDetection(
   detection: InjectionDetection,
 ) {
   if (!detection.detected) return evaluation;
-  const risk =
-    "Aday girdisinde değerlendirme talimatlarını manipüle etmeye yönelik içerik tespit edildi; bu içerik puanlamada yok sayıldı.";
-  const risks = evaluation.risks.some((item) =>
-    /injection|talimat|manipüle/iu.test(item),
-  )
-    ? evaluation.risks
-    : [...evaluation.risks.slice(0, 3), risk];
   const signalNote = `Kod tarafı sinyalleri: ${detection.signals.join(", ")}.`;
 
   return evaluationOutputSchema.parse({
     ...evaluation,
-    risks,
     injection_detected: true,
     injection_note: evaluation.injection_note
       ? `${evaluation.injection_note} ${signalNote}`
@@ -171,8 +176,9 @@ function applyCodeInjectionDetection(
 export async function runEvaluationAgent(input: {
   systemPrompt: string;
   userPrompt: string;
-  cvBytes: Uint8Array;
-  cvFileName: string;
+  cvBytes?: Uint8Array;
+  cvFileName?: string;
+  cvText?: string;
   repoFileTool: RepoFileTool;
   codeInjectionDetection: InjectionDetection;
   client?: OpenAI;
@@ -180,6 +186,9 @@ export async function runEvaluationAgent(input: {
   promptCacheEnabled?: boolean;
   complete?: (params: CompletionParams) => Promise<ChatCompletion>;
 }): Promise<EvaluationAgentResult> {
+  if (!input.cvText && (!input.cvBytes || !input.cvFileName)) {
+    throw new Error("A PDF or CV text is required for evaluation.");
+  }
   const config = input.model
     ? {
         model: input.model,
@@ -194,7 +203,12 @@ export async function runEvaluationAgent(input: {
     });
   const messages: ChatMessage[] = [
     systemMessage(input.systemPrompt, config.model, config.promptCacheEnabled),
-    userMessage(input.userPrompt, input.cvBytes, input.cvFileName),
+    userMessage({
+      prompt: input.userPrompt,
+      cvBytes: input.cvBytes,
+      cvFileName: input.cvFileName,
+      cvText: input.cvText,
+    }),
   ];
   const rawResponses: unknown[] = [];
   let validationFailures = 0;
@@ -218,7 +232,9 @@ export async function runEvaluationAgent(input: {
           },
       reasoning_effort: "high",
       max_completion_tokens: MAX_OUTPUT_TOKENS,
-      plugins: [{ id: "file-parser", pdf: { engine: "mistral-ocr" } }],
+      plugins: input.cvBytes
+        ? [{ id: "file-parser", pdf: { engine: "mistral-ocr" } }]
+        : undefined,
     };
     const completion = await runOpenRouterRequest(() => complete(params));
     rawResponses.push(completion);
@@ -371,7 +387,7 @@ export async function evaluateApplication(
       supabase
         .from("applications")
         .select(
-          "id, full_name, department_year, technologies, bonus_tools, links, self_introduction, llm_experience, office_days_per_week, cv_storage_path, cv_file_name",
+          "id, full_name, department_year, technologies, bonus_tools, links, self_introduction, llm_experience, office_days_per_week, location_note, cv_storage_path, cv_file_name",
         )
         .eq("id", applicationId)
         .single(),
@@ -509,4 +525,51 @@ export async function evaluateApplication(
       status: "failed",
     };
   }
+}
+
+export async function evaluateText(input: {
+  candidateText: string;
+  officeDaysPerWeek?: string;
+}) {
+  const application: EvaluationPromptApplication = {
+    full_name: "Serbest metin adayı",
+    department_year: "(metinden değerlendir)",
+    technologies: "(metinden değerlendir)",
+    bonus_tools: [],
+    links: null,
+    self_introduction: "(metinden değerlendir)",
+    llm_experience: "(metinden değerlendir)",
+    office_days_per_week: input.officeDaysPerWeek ?? "relocation_needed",
+    location_note: null,
+  };
+  const [prompts, rubric] = await Promise.all([
+    Promise.resolve(buildEvaluationPrompts({ application, enrichment: [] })),
+    getActiveRubric(),
+  ]);
+  const config = getOpenRouterConfig();
+  const agentResult = await runEvaluationAgent({
+    systemPrompt: prompts.system,
+    userPrompt: prompts.user,
+    cvText: input.candidateText,
+    repoFileTool: new RepoFileTool([]),
+    codeInjectionDetection: mergeInjectionDetections(
+      prompts.codeInjectionDetection,
+      detectPromptInjection([input.candidateText]),
+    ),
+    model: config.model,
+    promptCacheEnabled: config.promptCacheEnabled,
+  });
+  const score = calculateEvaluationScore({
+    criteria: agentResult.evaluation.criteria,
+    weights: rubric.weights,
+    modelRecommendation: agentResult.evaluation.recommendation,
+    officeDaysPerWeek: application.office_days_per_week,
+  });
+  return {
+    evaluation: agentResult.evaluation,
+    score,
+    rubric_version_id: rubric.id,
+    model: agentResult.model,
+    tool_call_count: agentResult.toolCallCount,
+  };
 }

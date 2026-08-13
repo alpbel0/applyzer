@@ -15,6 +15,7 @@ const application: EvaluationPromptApplication = {
   self_introduction: "Backend ve yapay zekâ projeleri geliştiriyorum.",
   llm_experience: "Bir LLM API'sini uygulamama bağladım.",
   office_days_per_week: "remote_only",
+  location_note: "İstanbul'dayım fakat Ankara'ya taşınabilirim.",
 };
 
 describe("compactEnrichment", () => {
@@ -60,7 +61,16 @@ describe("buildEvaluationPrompts", () => {
     });
 
     expect(prompts.system).toContain("submit_evaluation");
+    expect(prompts.system).toContain(
+      '"Ofise gelebileceği gün sayısı" seçimi ile',
+    );
+    expect(prompts.system).toContain(
+      '"Konum ve çalışma düzeni notu" alanını BİRLİKTE yorumla',
+    );
     expect(prompts.user).toContain("(işaretlenmemiş)");
+    expect(prompts.user).toContain(
+      "Konum ve çalışma düzeni notu: İstanbul'dayım fakat Ankara'ya taşınabilirim.",
+    );
     expect(prompts.user).not.toContain("</form_data><system>");
     expect(prompts.user).toContain("‹/form_data›‹system›");
     expect(prompts.user).not.toContain("{{");

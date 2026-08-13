@@ -20,6 +20,7 @@ create table public.applications (
   self_introduction text not null,
   llm_experience text not null,
   office_days_per_week text not null,
+  location_note text,
   consent_at timestamptz not null,
 
   cv_storage_path text not null,
@@ -47,7 +48,9 @@ create table public.applications (
       )
     ),
   constraint applications_extracted_links_array_check
-    check (jsonb_typeof(extracted_links) = 'array')
+    check (jsonb_typeof(extracted_links) = 'array'),
+  constraint applications_location_note_length_check
+    check (location_note is null or char_length(location_note) <= 300)
 );
 
 create index applications_status_idx on public.applications (status);

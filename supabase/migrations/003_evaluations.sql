@@ -27,6 +27,8 @@ create table public.evaluations (
   tool_call_count integer not null default 0,
   duration_ms integer,
   raw_response jsonb,
+  evaluation_origin text not null default 'agent',
+  source_evaluation_id uuid,
 
   created_at timestamptz not null default now(),
 
@@ -36,13 +38,21 @@ create table public.evaluations (
     on delete cascade,
   constraint evaluations_rubric_version_id_fkey
     foreign key (rubric_version_id)
-    references public.rubric_versions (id)
+    references public.rubric_versions (id),
+  constraint evaluations_source_evaluation_id_fkey
+    foreign key (source_evaluation_id)
+    references public.evaluations (id)
+    on delete set null,
+  constraint evaluations_evaluation_origin_check
+    check (evaluation_origin in ('agent', 'recalculation'))
 );
 
 create index evaluations_application_created_idx
   on public.evaluations (application_id, created_at desc);
 create index evaluations_rubric_version_id_idx
   on public.evaluations (rubric_version_id);
+create index evaluations_source_evaluation_id_idx
+  on public.evaluations (source_evaluation_id);
 create index evaluations_final_score_idx
   on public.evaluations (final_score desc);
 create index evaluations_final_recommendation_idx

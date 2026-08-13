@@ -21,6 +21,7 @@ const validApplication = {
   self_introduction: "Ürün geliştirmeyi ve yeni araçlar öğrenmeyi seviyorum.",
   llm_experience: "Bir LLM aracını REST API üzerinden projeme bağladım.",
   office_days_per_week: "3",
+  location_note: "İstanbul'dayım, kabul edilirsem Ankara'ya taşınabilirim.",
   privacy_consent: true,
   cv: {
     name: "ada-cv.pdf",
@@ -61,6 +62,12 @@ describe("applicationFormSchema", () => {
   });
 
   it("enforces text, consent and CV limits", () => {
+    expect(
+      applicationFormSchema.safeParse({
+        ...validApplication,
+        location_note: "x".repeat(301),
+      }).success,
+    ).toBe(false);
     expect(
       applicationFormSchema.safeParse({
         ...validApplication,

@@ -9,3 +9,10 @@ export function scheduleApplicationProcessing(applicationId: string) {
     await processApplicationLinks(applicationId);
   });
 }
+
+export function scheduleApplicationReevaluation(applicationId: string) {
+  after(async () => {
+    const { evaluateApplication } = await import("@/lib/evaluation/evaluate");
+    await evaluateApplication(applicationId);
+  });
+}
