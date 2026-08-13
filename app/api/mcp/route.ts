@@ -62,8 +62,15 @@ const baseHandler = createMcpHandler(
     server.registerTool(
       "submit_application",
       {
+        title: "Staj başvurusu gönder",
         description:
           "Kovan Startup Studio staj başvurusu oluşturur. Araç herkese açıktır. privacy_consent yalnızca aday veri işleme metnini kabul ettiyse true olmalıdır. PDF base64 olarak ve en fazla 3 MiB gönderilir. Adaya yalnızca başvuru numarası döner.",
+        annotations: {
+          readOnlyHint: false,
+          destructiveHint: false,
+          idempotentHint: false,
+          openWorldHint: true,
+        },
         inputSchema: submitApplicationSchema,
       },
       async (input) => {

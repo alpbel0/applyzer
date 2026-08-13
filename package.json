@@ -12,7 +12,8 @@
     "test": "vitest run --passWithNoTests",
     "verify:openrouter": "node --env-file=.env.local scripts/verify-openrouter.mjs",
     "verify:mcp": "node scripts/verify-mcp.mjs",
-    "verify:mcp:admin": "node --env-file=.env.local scripts/verify-mcp.mjs http://localhost:3000/api/mcp/admin --admin"
+    "verify:mcp:admin": "node --env-file=.env.local scripts/verify-mcp.mjs http://localhost:3000/api/mcp/admin --admin",
+    "verify:mcp:admin:extended": "node --env-file=.env.local scripts/verify-mcp.mjs http://localhost:3000/api/mcp/admin --admin --extended"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
