@@ -1,4 +1,4 @@
-import { PDFParse } from "pdf-parse";
+import { DOMMatrix, ImageData, Path2D } from "@napi-rs/canvas";
 
 export type PdfLinkMaterial = {
   text: string;
@@ -8,6 +8,13 @@ export type PdfLinkMaterial = {
 export async function extractPdfLinkMaterial(
   bytes: Uint8Array,
 ): Promise<PdfLinkMaterial> {
+  Object.defineProperties(globalThis, {
+    DOMMatrix: { configurable: true, value: DOMMatrix, writable: true },
+    ImageData: { configurable: true, value: ImageData, writable: true },
+    Path2D: { configurable: true, value: Path2D, writable: true },
+  });
+
+  const { PDFParse } = await import("pdf-parse");
   const parser = new PDFParse({ data: bytes });
 
   try {

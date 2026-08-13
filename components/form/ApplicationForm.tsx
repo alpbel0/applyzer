@@ -113,7 +113,7 @@ export function ApplicationForm() {
         method: "POST",
         body: formData,
       });
-      const payload = (await response.json()) as {
+      const payload = (await response.json().catch(() => ({}))) as {
         application_number?: number;
         error?: string;
         field_errors?: FieldErrors;
