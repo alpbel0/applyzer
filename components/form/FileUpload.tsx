@@ -10,8 +10,7 @@ type FileUploadProps = {
   onFileChange: (file: File | null) => void;
 };
 
-const ACCEPTED_TYPES =
-  ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const ACCEPTED_TYPES = ".pdf,application/pdf";
 
 export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -93,7 +92,7 @@ export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
           {file ? "Başka dosya seç" : "Dosya seç"}
         </button>
         <p id="cv-hint" className="mt-3 text-xs text-[#747c8c]">
-          PDF veya DOCX · En fazla {MAX_CV_SIZE_BYTES / 1024 / 1024} MiB
+          Yalnızca PDF · En fazla {MAX_CV_SIZE_BYTES / 1024 / 1024} MiB
         </p>
       </div>
       {error ? (

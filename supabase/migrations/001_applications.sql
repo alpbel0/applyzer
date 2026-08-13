@@ -26,6 +26,7 @@ create table public.applications (
   cv_file_name text not null,
   cv_text text,
   cv_parse_status public.cv_parse_status,
+  extracted_links jsonb not null default '[]'::jsonb,
 
   status public.application_status not null default 'pending',
   error_message text,
@@ -33,7 +34,9 @@ create table public.applications (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
-  constraint applications_application_number_key unique (application_number)
+  constraint applications_application_number_key unique (application_number),
+  constraint applications_extracted_links_array_check
+    check (jsonb_typeof(extracted_links) = 'array')
 );
 
 create index applications_status_idx on public.applications (status);

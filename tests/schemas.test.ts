@@ -62,6 +62,16 @@ describe("applicationFormSchema", () => {
         privacy_consent: false,
       }).success,
     ).toBe(false);
+    expect(
+      applicationFormSchema.safeParse({
+        ...validApplication,
+        cv: {
+          name: "ada-cv.docx",
+          size: 256_000,
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        },
+      }).success,
+    ).toBe(false);
   });
 });
 

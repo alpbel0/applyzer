@@ -10,10 +10,7 @@ values (
   'cvs',
   false,
   4194304,
-  array[
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ]::text[]
+  array['application/pdf']::text[]
 )
 on conflict (id) do update
 set

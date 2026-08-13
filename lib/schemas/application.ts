@@ -21,10 +21,7 @@ export const OFFICE_DAY_OPTIONS = [
   "relocation_needed",
 ] as const;
 
-export const CV_MIME_TYPES = [
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-] as const;
+export const CV_MIME_TYPES = ["application/pdf"] as const;
 
 const optionalTrimmedText = z.preprocess(
   (value) =>
@@ -41,14 +38,12 @@ export const cvUploadSchema = z
       .positive("CV boş olamaz.")
       .max(MAX_CV_SIZE_BYTES, "CV en fazla 4 MiB olabilir."),
     type: z.enum(CV_MIME_TYPES, {
-      error: "CV yalnızca PDF veya DOCX olabilir.",
+      error: "CV yalnızca PDF olabilir.",
     }),
   })
   .superRefine((file, context) => {
     const extension = file.name.split(".").pop()?.toLowerCase();
-    const expectedExtension = file.type === "application/pdf" ? "pdf" : "docx";
-
-    if (extension !== expectedExtension) {
+    if (extension !== "pdf") {
       context.addIssue({
         code: "custom",
         path: ["name"],

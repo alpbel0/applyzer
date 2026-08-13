@@ -15,6 +15,9 @@ vi.mock("@/lib/db/client", () => ({
   }),
 }));
 
+const scheduleApplicationProcessing = vi.fn();
+vi.mock("@/lib/worker/schedule", () => ({ scheduleApplicationProcessing }));
+
 function validFormData() {
   const formData = new FormData();
   formData.set("full_name", "Ada Lovelace");
@@ -57,6 +60,7 @@ describe("POST /api/applications", () => {
     await expect(response.json()).resolves.toEqual({ application_number: 42 });
     expect(storageFrom).toHaveBeenCalledWith("cvs");
     expect(databaseFrom).toHaveBeenCalledWith("applications");
+    expect(scheduleApplicationProcessing).toHaveBeenCalledTimes(1);
   });
 
   it("rejects a fake PDF before upload", async () => {

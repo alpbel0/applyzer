@@ -24,25 +24,9 @@ describe("CV upload validation", () => {
     ).toBe(false);
   });
 
-  it("recognizes a DOCX-shaped ZIP archive", () => {
-    const bytes = new Uint8Array([
-      0x50,
-      0x4b,
-      0x03,
-      0x04,
-      ...new TextEncoder().encode("[Content_Types].xml word/document.xml"),
-    ]);
-    expect(
-      hasValidCvSignature(
-        bytes,
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ),
-    ).toBe(true);
-  });
-
   it("sanitizes file names and derives the trusted extension", () => {
-    expect(
-      sanitizeCvFileName("../../Yiğitalp CV (final).exe", "application/pdf"),
-    ).toBe("Yigitalp-CV-final.pdf");
+    expect(sanitizeCvFileName("../../Yiğitalp CV (final).exe")).toBe(
+      "Yigitalp-CV-final.pdf",
+    );
   });
 });

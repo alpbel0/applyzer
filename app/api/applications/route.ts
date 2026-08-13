@@ -8,6 +8,7 @@ import {
   applicationFormSchema,
   MAX_CV_SIZE_BYTES,
 } from "@/lib/schemas/application";
+import { scheduleApplicationProcessing } from "@/lib/worker/schedule";
 
 const MAX_MULTIPART_SIZE_BYTES = MAX_CV_SIZE_BYTES + 64 * 1024;
 
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
   if (!hasValidCvSignature(cvBytes, parsed.data.cv.type)) {
     return errorResponse(
       {
-        error: "CV içeriği geçerli bir PDF veya DOCX dosyası değil.",
+        error: "CV içeriği geçerli bir PDF dosyası değil.",
         field_errors: { cv: ["Dosya içeriği geçersiz."] },
       },
       415,
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
   }
 
   const applicationId = crypto.randomUUID();
-  const safeFileName = sanitizeCvFileName(cv.name, parsed.data.cv.type);
+  const safeFileName = sanitizeCvFileName(cv.name);
   const storagePath = `${applicationId}/${safeFileName}`;
   const supabase = createSupabaseAdminClient();
   const { error: uploadError } = await supabase.storage
@@ -130,6 +131,8 @@ export async function POST(request: Request) {
       cvFileName: cv.name,
       cvStoragePath: storagePath,
     });
+
+    scheduleApplicationProcessing(applicationId);
 
     return Response.json(
       { application_number: application.application_number },
