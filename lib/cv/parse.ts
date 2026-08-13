@@ -14,7 +14,11 @@ export async function extractPdfLinkMaterial(
     Path2D: { configurable: true, value: Path2D, writable: true },
   });
 
-  const { PDFParse } = await import("pdf-parse");
+  const [{ PDFParse }, { getData: getPdfWorkerData }] = await Promise.all([
+    import("pdf-parse"),
+    import("pdf-parse/worker"),
+  ]);
+  PDFParse.setWorker(getPdfWorkerData());
   const parser = new PDFParse({ data: bytes });
 
   try {
