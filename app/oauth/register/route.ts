@@ -7,12 +7,34 @@ const registrationSchema = z
   .object({
     redirect_uris: z.array(z.string()).min(1).max(10),
     client_name: z.string().trim().min(1).max(120).optional(),
-    token_endpoint_auth_method: z.literal("none").optional(),
-    grant_types: z.array(z.literal("authorization_code")).optional(),
-    response_types: z.array(z.literal("code")).optional(),
+    // DCR clients may advertise capabilities we do not issue, such as
+    // refresh_token. Registration stays interoperable while the response
+    // below accurately declares the subset Applyzer supports.
+    token_endpoint_auth_method: z.string().optional(),
+    grant_types: z.array(z.string()).optional(),
+    response_types: z.array(z.string()).optional(),
     scope: z.string().optional(),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((value, context) => {
+    if (
+      value.grant_types &&
+      !value.grant_types.includes("authorization_code")
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["grant_types"],
+        message: "authorization_code is required",
+      });
+    }
+    if (value.response_types && !value.response_types.includes("code")) {
+      context.addIssue({
+        code: "custom",
+        path: ["response_types"],
+        message: "code response type is required",
+      });
+    }
+  });
 
 function corsHeaders() {
   return {
@@ -52,6 +74,10 @@ export async function POST(request: Request) {
   }
   const parsed = registrationSchema.safeParse(body);
   if (!parsed.success) {
+    console.warn(
+      "MCP OAuth client metadata rejected",
+      parsed.error.issues.map(({ path, code }) => ({ path, code })),
+    );
     return Response.json(
       {
         error: "invalid_client_metadata",
