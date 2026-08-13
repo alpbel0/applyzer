@@ -14,10 +14,10 @@ export const repositoryFlagSchema = z.enum([
   "mcp",
   "llm_sdk",
   "agent_framework",
-  "prompt_yonetimi",
-  "ai_araci",
+  "prompt_management",
+  "ai_tool",
   "db",
-  "dokuman",
+  "documentation",
 ]);
 
 const dateSchema = z
@@ -27,26 +27,48 @@ const dateSchema = z
 export const githubRepositorySchema = z
   .object({
     name: z.string().trim().min(1),
+    full_name: z.string().trim().min(3),
+    url: z.url(),
     description: z.string().nullable(),
-    language: z.string().nullable(),
+    primary_language: z.string().nullable(),
     size_kb: z.number().nonnegative(),
-    last_push: dateSchema,
+    last_push: z.iso.datetime().nullable(),
     license: z.string().nullable(),
-    readme_summary: z.string(),
+    default_branch: z.string().trim().min(1),
+    empty: z.boolean(),
+    readme_summary: z.string().nullable(),
     flags: z.array(repositoryFlagSchema),
+    languages: z.record(z.string(), z.number().min(0).max(1)),
+    detail_status: z.enum(["ok", "partial"]),
+  })
+  .strict();
+
+export const githubRepositoryMetadataSchema = z
+  .object({
+    name: z.string().trim().min(1),
+    url: z.url(),
+    description: z.string().nullable(),
+    primary_language: z.string().nullable(),
+    size_kb: z.number().nonnegative(),
+    last_push: z.iso.datetime().nullable(),
+    license: z.string().nullable(),
+    empty: z.boolean(),
   })
   .strict();
 
 export const githubEnrichmentDataSchema = z
   .object({
     username: z.string().trim().min(1),
-    account_age_months: z.number().int().nonnegative(),
-    public_repositories: z.number().int().nonnegative(),
-    non_fork_repositories: z.number().int().nonnegative(),
-    followers: z.number().int().nonnegative(),
-    last_activity: dateSchema,
+    account_age_months: z.number().int().nonnegative().nullable(),
+    public_repositories: z.number().int().nonnegative().nullable(),
+    non_fork_repositories: z.number().int().nonnegative().nullable(),
+    followers: z.number().int().nonnegative().nullable(),
+    last_activity: z.iso.datetime().nullable(),
     languages: z.record(z.string(), z.number().min(0).max(1)),
     repositories: z.array(githubRepositorySchema),
+    repository_metadata: z.array(githubRepositoryMetadataSchema),
+    github_requests: z.number().int().nonnegative(),
+    requested_repository: githubRepositorySchema.nullable().optional(),
   })
   .strict();
 

@@ -35,6 +35,17 @@ create table public.applications (
   updated_at timestamptz not null default now(),
 
   constraint applications_application_number_key unique (application_number),
+  constraint applications_office_days_per_week_check
+    check (
+      office_days_per_week in (
+        '1',
+        '2',
+        '3',
+        '4-5',
+        'relocation_needed',
+        'remote_only'
+      )
+    ),
   constraint applications_extracted_links_array_check
     check (jsonb_typeof(extracted_links) = 'array')
 );

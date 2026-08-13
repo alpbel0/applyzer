@@ -43,7 +43,5 @@ next-env.d.ts
 
 
 /docs
-
-/prompts
 CLAUDE.md
 AGENTS.md

@@ -19,6 +19,7 @@ export const OFFICE_DAY_OPTIONS = [
   "3",
   "4-5",
   "relocation_needed",
+  "remote_only",
 ] as const;
 
 export const CV_MIME_TYPES = ["application/pdf"] as const;

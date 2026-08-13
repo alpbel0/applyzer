@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import { processApplicationLinks } from "@/lib/worker/process-application";
 
+export const maxDuration = 300;
+
 const workerRequestSchema = z.object({
   application_id: z.uuid().optional(),
 });

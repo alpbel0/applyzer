@@ -10,13 +10,13 @@ function jsonResponse(value: unknown, status = 200) {
 }
 
 describe("GitHub enrichment", () => {
-  it("prioritizes explicit repos, inspects six repos and stays within 20 requests", async () => {
+  it("prioritizes explicit repos, inspects ten repos and stays within 32 requests", async () => {
     const requested: string[] = [];
-    const repositories = Array.from({ length: 7 }, (_, index) => ({
-      name: index === 6 ? "MentorMind" : `repo-${index}`,
-      full_name: index === 6 ? "alpbel0/MentorMind" : `alpbel0/repo-${index}`,
+    const repositories = Array.from({ length: 11 }, (_, index) => ({
+      name: index === 10 ? "MentorMind" : `repo-${index}`,
+      full_name: index === 10 ? "alpbel0/MentorMind" : `alpbel0/repo-${index}`,
       html_url:
-        index === 6
+        index === 10
           ? "https://github.com/alpbel0/MentorMind"
           : `https://github.com/alpbel0/repo-${index}`,
       description: null,
@@ -25,7 +25,7 @@ describe("GitHub enrichment", () => {
       size: index === 0 ? 0 : 100,
       default_branch: "develop",
       created_at: "2024-01-01T00:00:00Z",
-      pushed_at: `2026-08-0${7 - index}T00:00:00Z`,
+      pushed_at: new Date(Date.UTC(2026, 7, 20 - index)).toISOString(),
       license: { spdx_id: "MIT" },
     }));
     const fetcher = async (input: string | URL | Request) => {
@@ -35,7 +35,7 @@ describe("GitHub enrichment", () => {
         return jsonResponse({
           login: "alpbel0",
           created_at: "2024-01-01T00:00:00Z",
-          public_repos: 7,
+          public_repos: 11,
           followers: 3,
         });
       if (url.includes("/users/alpbel0/repos?"))
@@ -66,7 +66,7 @@ describe("GitHub enrichment", () => {
       { token: "test-token", fetcher: fetcher as typeof fetch },
     );
 
-    expect(requested).toHaveLength(20);
+    expect(requested).toHaveLength(32);
     expect(results).toHaveLength(2);
     expect(results.every((result) => result.status === "ok")).toBe(true);
     const profileData = results[0]?.data as {
@@ -74,8 +74,8 @@ describe("GitHub enrichment", () => {
       repository_metadata: Array<{ name: string; empty: boolean }>;
       repositories: Array<{ name: string; flags: string[] }>;
     };
-    expect(profileData.github_requests).toBe(20);
-    expect(profileData.repositories).toHaveLength(6);
+    expect(profileData.github_requests).toBe(32);
+    expect(profileData.repositories).toHaveLength(10);
     expect(profileData.repositories[0]?.name).toBe("MentorMind");
     expect(profileData.repositories[0]?.flags).toEqual(
       expect.arrayContaining([

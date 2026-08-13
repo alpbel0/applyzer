@@ -10,6 +10,8 @@ import {
 } from "@/lib/schemas/application";
 import { scheduleApplicationProcessing } from "@/lib/worker/schedule";
 
+export const maxDuration = 300;
+
 const MAX_MULTIPART_SIZE_BYTES = MAX_CV_SIZE_BYTES + 64 * 1024;
 
 type ErrorResponse = {

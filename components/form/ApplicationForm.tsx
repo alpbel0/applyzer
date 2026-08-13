@@ -387,6 +387,9 @@ export function ApplicationForm() {
                 <option value="relocation_needed">
                   Şu an başka şehirdeyim, ayarlamam gerekir
                 </option>
+                <option value="remote_only">
+                  Yalnızca uzaktan çalışabilirim
+                </option>
               </select>
               <FieldError errors={errors} field="office_days_per_week" />
             </div>

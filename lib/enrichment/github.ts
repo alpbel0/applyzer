@@ -10,8 +10,8 @@ import {
 } from "@/lib/enrichment/github-url";
 
 const GITHUB_API = "https://api.github.com";
-const MAX_REQUESTS = 20;
-const MAX_DETAILED_REPOSITORIES = 6;
+const MAX_REQUESTS = 32;
+const MAX_DETAILED_REPOSITORIES = 10;
 
 type EnrichmentStatus = "ok" | "partial" | "unreachable" | "skipped";
 
@@ -357,10 +357,10 @@ export async function enrichGitHubLinks(
     groups.set(key, [...(groups.get(key) ?? []), item]);
   }
   const results: GitHubEnrichmentResult[] = [];
+  const client = new GitHubClient(token, options?.fetcher ?? fetch);
 
   for (const [username, references] of groups) {
     const groupStartedAt = Date.now();
-    const client = new GitHubClient(token, options?.fetcher ?? fetch);
     try {
       const enriched = await enrichOwnerGroup(client, username, references);
       for (const result of enriched) {

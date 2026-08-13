@@ -5,12 +5,13 @@ import { extractPdfLinkMaterial } from "@/lib/cv/parse";
 import { createSupabaseAdminClient } from "@/lib/db/client";
 import { replaceGitHubEnrichmentResults } from "@/lib/db/enrichment";
 import { enrichGitHubLinks } from "@/lib/enrichment/github";
+import { evaluateApplication } from "@/lib/evaluation/evaluate";
 
 export type WorkerResult = {
   application_id: string;
   enrichment_count: number;
   link_count: number;
-  status: "evaluating" | "failed" | "ignored";
+  status: "done" | "evaluating" | "failed" | "ignored";
 };
 
 async function findOldestPendingApplicationId() {
@@ -61,9 +62,8 @@ export async function processApplicationLinks(
       throw downloadError ?? new Error("CV download returned no data");
     }
 
-    const material = await extractPdfLinkMaterial(
-      new Uint8Array(await cv.arrayBuffer()),
-    );
+    const cvBytes = new Uint8Array(await cv.arrayBuffer());
+    const material = await extractPdfLinkMaterial(cvBytes.slice());
     const extractedLinks = extractLinks([
       application.links,
       material.text,
@@ -86,11 +86,16 @@ export async function processApplicationLinks(
       .eq("id", applicationId);
     if (updateError) throw updateError;
 
+    const evaluation = await evaluateApplication(applicationId, {
+      cvBytes,
+      pdfText: material.text,
+    });
+
     return {
       application_id: applicationId,
       enrichment_count: githubResults.length,
       link_count: extractedLinks.length,
-      status: "evaluating",
+      status: evaluation.status,
     };
   } catch (error) {
     console.error("Application link extraction failed", error);

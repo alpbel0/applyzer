@@ -9,6 +9,7 @@ import {
   CRITERION_KEYS,
   evaluationOutputSchema,
 } from "@/lib/schemas/evaluation";
+import { rubricWeightsSchema } from "@/lib/db/rubric";
 
 const validApplication = {
   full_name: "Ada Lovelace",
@@ -36,6 +37,22 @@ const validCriteria = Object.fromEntries(
 );
 
 describe("applicationFormSchema", () => {
+  it("accepts remote-only as the zero-office-day option", () => {
+    expect(
+      applicationFormSchema.safeParse({
+        ...validApplication,
+        office_days_per_week: "remote_only",
+      }).success,
+    ).toBe(true);
+
+    expect(
+      applicationFormSchema.safeParse({
+        ...validApplication,
+        office_days_per_week: "0",
+      }).success,
+    ).toBe(false);
+  });
+
   it("accepts a valid application", () => {
     expect(applicationFormSchema.parse(validApplication)).toMatchObject({
       email: "ada@example.com",
@@ -71,6 +88,27 @@ describe("applicationFormSchema", () => {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         },
       }).success,
+    ).toBe(false);
+  });
+});
+
+describe("rubricWeightsSchema", () => {
+  it("requires all seven weights to total exactly one", () => {
+    const weights = {
+      rest_api: 0.15,
+      llm_experience: 0.2,
+      agentic_mcp: 0.2,
+      bonus_tools: 0.15,
+      verifiability: 0.15,
+      learning_signal: 0.1,
+      cv_quality: 0.05,
+    };
+    expect(rubricWeightsSchema.safeParse(weights).success).toBe(true);
+    expect(
+      rubricWeightsSchema.safeParse({ ...weights, cv_quality: 0.1 }).success,
+    ).toBe(false);
+    expect(
+      rubricWeightsSchema.safeParse({ ...weights, extra: 0 }).success,
     ).toBe(false);
   });
 });
@@ -119,6 +157,48 @@ describe("evaluationOutputSchema", () => {
 });
 
 describe("enrichmentResultSchema", () => {
+  it("accepts the Phase 4 GitHub payload", () => {
+    const repository = {
+      name: "applyzer",
+      full_name: "ada/applyzer",
+      url: "https://github.com/ada/applyzer",
+      description: "Candidate evaluation pipeline",
+      primary_language: "TypeScript",
+      size_kb: 512,
+      last_push: "2026-08-13T12:30:00Z",
+      license: "MIT",
+      default_branch: "main",
+      empty: false,
+      readme_summary: "A documented evaluation pipeline.",
+      flags: ["tests", "ci", "llm_sdk", "documentation"],
+      languages: { TypeScript: 0.9, CSS: 0.1 },
+      detail_status: "ok",
+    };
+
+    expect(
+      enrichmentResultSchema.parse({
+        source: "github",
+        url: "https://github.com/ada/applyzer",
+        status: "ok",
+        error: null,
+        duration_ms: 240,
+        data: {
+          username: "ada",
+          account_age_months: null,
+          public_repositories: null,
+          non_fork_repositories: null,
+          followers: null,
+          last_activity: "2026-08-13T12:30:00Z",
+          languages: { TypeScript: 1 },
+          repositories: [repository],
+          repository_metadata: [],
+          github_requests: 4,
+          requested_repository: repository,
+        },
+      }).source,
+    ).toBe("github");
+  });
+
   it("validates source-specific data", () => {
     expect(
       enrichmentResultSchema.parse({
