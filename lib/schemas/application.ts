@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const MAX_CV_SIZE_BYTES = 10 * 1024 * 1024;
+export const MAX_CV_SIZE_BYTES = 4 * 1024 * 1024;
 
 export const BONUS_TOOLS = [
   "n8n",
@@ -39,7 +39,7 @@ export const cvUploadSchema = z
       .number()
       .int()
       .positive("CV boş olamaz.")
-      .max(MAX_CV_SIZE_BYTES, "CV en fazla 10 MiB olabilir."),
+      .max(MAX_CV_SIZE_BYTES, "CV en fazla 4 MiB olabilir."),
     type: z.enum(CV_MIME_TYPES, {
       error: "CV yalnızca PDF veya DOCX olabilir.",
     }),
@@ -86,6 +86,9 @@ export const applicationInputSchema = z
       .max(1500, "LLM/agent deneyimi en fazla 1500 karakter olabilir."),
     office_days_per_week: z.enum(OFFICE_DAY_OPTIONS, {
       error: "Geçerli bir ofis günü seçeneği seçin.",
+    }),
+    privacy_consent: z.literal(true, {
+      error: "Başvuru için veri işleme onayı gerekli.",
     }),
   })
   .strict();

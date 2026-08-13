@@ -20,6 +20,7 @@ create table public.applications (
   self_introduction text not null,
   llm_experience text not null,
   office_days_per_week text not null,
+  consent_at timestamptz not null,
 
   cv_storage_path text not null,
   cv_file_name text not null,

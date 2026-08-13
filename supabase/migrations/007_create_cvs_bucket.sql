@@ -9,7 +9,7 @@ values (
   'cvs',
   'cvs',
   false,
-  10485760,
+  4194304,
   array[
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'

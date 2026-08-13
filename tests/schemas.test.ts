@@ -20,6 +20,7 @@ const validApplication = {
   self_introduction: "Ürün geliştirmeyi ve yeni araçlar öğrenmeyi seviyorum.",
   llm_experience: "Bir LLM aracını REST API üzerinden projeme bağladım.",
   office_days_per_week: "3",
+  privacy_consent: true,
   cv: {
     name: "ada-cv.pdf",
     size: 256_000,
@@ -42,7 +43,7 @@ describe("applicationFormSchema", () => {
     });
   });
 
-  it("enforces text and CV limits", () => {
+  it("enforces text, consent and CV limits", () => {
     expect(
       applicationFormSchema.safeParse({
         ...validApplication,
@@ -53,6 +54,12 @@ describe("applicationFormSchema", () => {
       applicationFormSchema.safeParse({
         ...validApplication,
         cv: { ...validApplication.cv, size: MAX_CV_SIZE_BYTES + 1 },
+      }).success,
+    ).toBe(false);
+    expect(
+      applicationFormSchema.safeParse({
+        ...validApplication,
+        privacy_consent: false,
       }).success,
     ).toBe(false);
   });
