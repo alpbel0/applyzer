@@ -12,7 +12,7 @@ describe("MCP OAuth metadata", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
-      resource: "https://applyzer.example/api/mcp",
+      resource: "https://applyzer.example/api/mcp/admin",
       authorization_servers: ["https://applyzer.example"],
       scopes_supported: ["admin"],
     });
