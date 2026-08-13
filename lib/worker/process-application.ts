@@ -3,9 +3,12 @@ import "server-only";
 import { extractLinks } from "@/lib/cv/extract-links";
 import { extractPdfLinkMaterial } from "@/lib/cv/parse";
 import { createSupabaseAdminClient } from "@/lib/db/client";
+import { replaceGitHubEnrichmentResults } from "@/lib/db/enrichment";
+import { enrichGitHubLinks } from "@/lib/enrichment/github";
 
 export type WorkerResult = {
   application_id: string;
+  enrichment_count: number;
   link_count: number;
   status: "evaluating" | "failed" | "ignored";
 };
@@ -42,7 +45,12 @@ export async function processApplicationLinks(
 
   if (claimError) throw claimError;
   if (!application) {
-    return { application_id: applicationId, link_count: 0, status: "ignored" };
+    return {
+      application_id: applicationId,
+      enrichment_count: 0,
+      link_count: 0,
+      status: "ignored",
+    };
   }
 
   try {
@@ -61,6 +69,12 @@ export async function processApplicationLinks(
       material.text,
       ...material.embeddedUrls,
     ]);
+    const githubResults = await enrichGitHubLinks(
+      extractedLinks
+        .filter((link) => link.source === "github")
+        .map((link) => link.url),
+    );
+    await replaceGitHubEnrichmentResults(applicationId, githubResults);
 
     const { error: updateError } = await supabase
       .from("applications")
@@ -74,6 +88,7 @@ export async function processApplicationLinks(
 
     return {
       application_id: applicationId,
+      enrichment_count: githubResults.length,
       link_count: extractedLinks.length,
       status: "evaluating",
     };
@@ -93,6 +108,11 @@ export async function processApplicationLinks(
       );
     }
 
-    return { application_id: applicationId, link_count: 0, status: "failed" };
+    return {
+      application_id: applicationId,
+      enrichment_count: 0,
+      link_count: 0,
+      status: "failed",
+    };
   }
 }
