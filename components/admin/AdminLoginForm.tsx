@@ -16,6 +16,12 @@ export function AdminLoginForm() {
         <label className="form-label" htmlFor="password">
           Yönetici şifresi
         </label>
+        <p
+          id="password-hint"
+          className="mb-2 text-xs text-[color:var(--ink-soft)]"
+        >
+          Şifre dokümanda belirtilmiştir.
+        </p>
         <input
           className="form-control"
           id="password"
@@ -25,7 +31,9 @@ export function AdminLoginForm() {
           required
           autoFocus
           aria-invalid={Boolean(state.error)}
-          aria-describedby={state.error ? "login-error" : undefined}
+          aria-describedby={
+            state.error ? "password-hint login-error" : "password-hint"
+          }
         />
         {state.error ? (
           <p id="login-error" role="alert" className="form-error">
