@@ -45,7 +45,9 @@ export function classifyLink(rawUrl: string): LinkSource | "skipped" {
   const hostname = new URL(normalized).hostname.replace(/^www\./u, "");
   if (hostname === "github.com") return "github";
   if (hostname === "kaggle.com") return "kaggle";
-  if (hostname === "medium.com") return "medium";
+  if (hostname === "medium.com" || hostname.endsWith(".medium.com")) {
+    return "medium";
+  }
   if (hostname === "linkedin.com") return "linkedin";
   return "generic";
 }

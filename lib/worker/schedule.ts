@@ -12,7 +12,8 @@ export function scheduleApplicationProcessing(applicationId: string) {
 
 export function scheduleApplicationReevaluation(applicationId: string) {
   after(async () => {
-    const { evaluateApplication } = await import("@/lib/evaluation/evaluate");
-    await evaluateApplication(applicationId);
+    const { processApplicationLinks } =
+      await import("@/lib/worker/process-application");
+    await processApplicationLinks(applicationId, { alreadyClaimed: true });
   });
 }

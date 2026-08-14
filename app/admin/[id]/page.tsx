@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { EnrichmentPanel } from "@/components/admin/EnrichmentPanel";
+import { EmailDraftPanel } from "@/components/admin/EmailDraftPanel";
 import { ScoreBreakdown } from "@/components/admin/ScoreBreakdown";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { ReevaluateButton } from "@/components/admin/ReevaluateButton";
@@ -95,8 +96,14 @@ export default async function ApplicationDetailPage({
   const detail = await getAdminApplicationDetail(id);
   if (!detail) notFound();
 
-  const { application, evaluations, enrichment } = detail;
+  const { application, evaluations, emails, enrichment } = detail;
   const latest = evaluations[0];
+  const emailDraft = latest
+    ? (emails.find((email) => email.evaluation_id === latest.id) ??
+      emails[0] ??
+      null)
+    : null;
+  const demoMode = process.env.DEMO_MODE?.trim().toLowerCase() !== "false";
 
   return (
     <>
@@ -257,6 +264,16 @@ export default async function ApplicationDetailPage({
                       label="Bölüm uyumu"
                       value={departmentLabels[latest.department_fit]}
                     />
+                  </div>
+                </Card>
+
+                <Card className="p-6">
+                  <h2 className="text-xl font-black">Aday maili</h2>
+                  <p className="mt-1 text-sm text-[#7b8290]">
+                    Göndermeden önce taslağı ve türünü kontrol edin.
+                  </p>
+                  <div className="mt-5">
+                    <EmailDraftPanel draft={emailDraft} demoMode={demoMode} />
                   </div>
                 </Card>
 

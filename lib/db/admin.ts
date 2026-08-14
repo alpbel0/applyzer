@@ -59,6 +59,21 @@ export type AdminEvaluation = {
   created_at: string;
 };
 
+export type AdminEmailDraft = {
+  id: string;
+  application_id: string;
+  evaluation_id: string;
+  subject: string;
+  body: string;
+  draft_type: Recommendation;
+  is_sent: boolean;
+  sent_at: string | null;
+  demo_mode: boolean;
+  provider_id: string | null;
+  error: string | null;
+  created_at: string;
+};
+
 export type AdminApplicationDetail = {
   application: {
     id: string;
@@ -80,6 +95,7 @@ export type AdminApplicationDetail = {
     created_at: string;
   };
   evaluations: AdminEvaluation[];
+  emails: AdminEmailDraft[];
   enrichment: Array<{
     id: string;
     source: string;
@@ -167,6 +183,7 @@ export async function getAdminApplicationDetail(
     evaluationsResult,
     enrichmentResult,
     rankingResult,
+    emailsResult,
   ] = await Promise.all([
     supabase
       .from("applications")
@@ -191,12 +208,20 @@ export async function getAdminApplicationDetail(
       .from("evaluations")
       .select("id, application_id, rubric_version_id, final_score, created_at")
       .order("created_at", { ascending: false }),
+    supabase
+      .from("emails")
+      .select(
+        "id, application_id, evaluation_id, subject, body, draft_type, is_sent, sent_at, demo_mode, provider_id, error, created_at",
+      )
+      .eq("application_id", applicationId)
+      .order("created_at", { ascending: false }),
   ]);
 
   if (applicationResult.error) throw applicationResult.error;
   if (evaluationsResult.error) throw evaluationsResult.error;
   if (enrichmentResult.error) throw enrichmentResult.error;
   if (rankingResult.error) throw rankingResult.error;
+  if (emailsResult.error) throw emailsResult.error;
   if (!applicationResult.data) return null;
 
   const latestByRubricAndApplication = new Map<
@@ -248,6 +273,7 @@ export async function getAdminApplicationDetail(
         ranked_candidate_count: ranking?.count ?? 0,
       } as AdminEvaluation;
     }),
+    emails: emailsResult.data as AdminEmailDraft[],
     enrichment: enrichmentResult.data as AdminApplicationDetail["enrichment"],
   };
 }

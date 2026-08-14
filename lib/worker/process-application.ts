@@ -3,8 +3,8 @@ import "server-only";
 import { extractLinks } from "@/lib/cv/extract-links";
 import { extractPdfLinkMaterial } from "@/lib/cv/parse";
 import { createSupabaseAdminClient } from "@/lib/db/client";
-import { replaceGitHubEnrichmentResults } from "@/lib/db/enrichment";
-import { enrichGitHubLinks } from "@/lib/enrichment/github";
+import { replaceEnrichmentResults } from "@/lib/db/enrichment";
+import { enrichLinks } from "@/lib/enrichment";
 import { evaluateApplication } from "@/lib/evaluation/evaluate";
 
 export type WorkerResult = {
@@ -30,19 +30,28 @@ async function findOldestPendingApplicationId() {
 
 export async function processApplicationLinks(
   requestedApplicationId?: string,
+  options?: { alreadyClaimed?: boolean },
 ): Promise<WorkerResult | null> {
   const applicationId =
     requestedApplicationId ?? (await findOldestPendingApplicationId());
   if (!applicationId) return null;
 
   const supabase = createSupabaseAdminClient();
-  const { data: application, error: claimError } = await supabase
-    .from("applications")
-    .update({ status: "evaluating", error_message: null })
-    .eq("id", applicationId)
-    .eq("status", "pending")
-    .select("id, links, cv_storage_path")
-    .maybeSingle();
+  const applicationQuery = options?.alreadyClaimed
+    ? supabase
+        .from("applications")
+        .select("id, links, cv_storage_path")
+        .eq("id", applicationId)
+        .eq("status", "evaluating")
+        .maybeSingle()
+    : supabase
+        .from("applications")
+        .update({ status: "evaluating", error_message: null })
+        .eq("id", applicationId)
+        .eq("status", "pending")
+        .select("id, links, cv_storage_path")
+        .maybeSingle();
+  const { data: application, error: claimError } = await applicationQuery;
 
   if (claimError) throw claimError;
   if (!application) {
@@ -69,12 +78,8 @@ export async function processApplicationLinks(
       material.text,
       ...material.embeddedUrls,
     ]);
-    const githubResults = await enrichGitHubLinks(
-      extractedLinks
-        .filter((link) => link.source === "github")
-        .map((link) => link.url),
-    );
-    await replaceGitHubEnrichmentResults(applicationId, githubResults);
+    const enrichmentResults = await enrichLinks(extractedLinks);
+    await replaceEnrichmentResults(applicationId, enrichmentResults);
 
     const { error: updateError } = await supabase
       .from("applications")
@@ -93,7 +98,7 @@ export async function processApplicationLinks(
 
     return {
       application_id: applicationId,
-      enrichment_count: githubResults.length,
+      enrichment_count: enrichmentResults.length,
       link_count: extractedLinks.length,
       status: evaluation.status,
     };

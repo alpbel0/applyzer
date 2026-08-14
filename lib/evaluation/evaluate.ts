@@ -10,6 +10,8 @@ import {
   linkEvaluationAttempts,
   recordEvaluationAttempts,
 } from "@/lib/db/evaluations";
+import { createEmailDraftRecord } from "@/lib/db/emails";
+import { selectInitialEmailDraft } from "@/lib/email/templates";
 import { getActiveRubric } from "@/lib/db/rubric";
 import {
   buildEvaluationPrompts,
@@ -475,6 +477,20 @@ export async function evaluateApplication(
       durationMs,
       rawResponses,
     });
+    try {
+      await createEmailDraftRecord({
+        applicationId,
+        evaluationId: evaluation.id,
+        draftType: score.final_recommendation,
+        draft: selectInitialEmailDraft({
+          fullName: application.full_name,
+          finalRecommendation: score.final_recommendation,
+          evaluation: agentResult.evaluation,
+        }),
+      });
+    } catch (error) {
+      console.error("Evaluation email draft could not be saved", error);
+    }
     try {
       await linkEvaluationAttempts(runId, evaluation.id);
     } catch (error) {

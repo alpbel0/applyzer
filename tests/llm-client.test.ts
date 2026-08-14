@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getOpenRouterConfig,
+  getOpenRouterSummaryConfig,
   normalizeOpenRouterError,
   runOpenRouterRequest,
 } from "@/lib/llm/client";
@@ -35,6 +36,19 @@ describe("getOpenRouterConfig", () => {
     expect(() => getOpenRouterConfig({ OPENROUTER_API_KEY: "key" })).toThrow(
       "OPENROUTER_MODEL_JUDGE",
     );
+  });
+
+  it("uses the dedicated summary model without prompt caching", () => {
+    expect(
+      getOpenRouterSummaryConfig({
+        OPENROUTER_API_KEY: "secret",
+        OPENROUTER_MODEL_SUMMARY: "openai/gpt-5.6-mini",
+      }),
+    ).toEqual({
+      apiKey: "secret",
+      model: "openai/gpt-5.6-mini",
+      promptCacheEnabled: false,
+    });
   });
 });
 

@@ -1,18 +1,17 @@
 import "server-only";
 
 import { createSupabaseAdminClient } from "@/lib/db/client";
-import type { GitHubEnrichmentResult } from "@/lib/enrichment/github";
+import type { StoredEnrichmentResult } from "@/lib/enrichment/types";
 
-export async function replaceGitHubEnrichmentResults(
+export async function replaceEnrichmentResults(
   applicationId: string,
-  results: GitHubEnrichmentResult[],
+  results: StoredEnrichmentResult[],
 ) {
   const supabase = createSupabaseAdminClient();
   const { error: deleteError } = await supabase
     .from("enrichment_results")
     .delete()
-    .eq("application_id", applicationId)
-    .eq("source", "github");
+    .eq("application_id", applicationId);
   if (deleteError) throw deleteError;
   if (results.length === 0) return;
 
@@ -21,7 +20,7 @@ export async function replaceGitHubEnrichmentResults(
     .insert(
       results.map((result) => ({
         application_id: applicationId,
-        source: "github",
+        source: result.source,
         url: result.url,
         status: result.status,
         data: result.data,

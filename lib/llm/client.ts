@@ -45,11 +45,25 @@ export function getOpenRouterConfig(
   };
 }
 
-export function createOpenRouterClient(config = getOpenRouterConfig()) {
+export function getOpenRouterSummaryConfig(
+  env: Record<string, string | undefined> = process.env,
+): OpenRouterConfig {
+  const apiKey = env.OPENROUTER_API_KEY?.trim();
+  const model = env.OPENROUTER_MODEL_SUMMARY?.trim();
+  if (!apiKey) throw new Error("OPENROUTER_API_KEY is not configured.");
+  if (!model) throw new Error("OPENROUTER_MODEL_SUMMARY is not configured.");
+
+  return { apiKey, model, promptCacheEnabled: false };
+}
+
+export function createOpenRouterClient(
+  config = getOpenRouterConfig(),
+  options?: { timeoutMs?: number },
+) {
   return new OpenAI({
     apiKey: config.apiKey,
     baseURL: OPENROUTER_BASE_URL,
-    timeout: DEFAULT_TIMEOUT_MS,
+    timeout: options?.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     maxRetries: 0,
   });
 }

@@ -1,5 +1,5 @@
 const RESERVED_TAG_PATTERN =
-  /<\/?(?:form_data|cv_file|untrusted_cv_text|enrichment|system|developer|assistant|user|tool)(?:\s[^>]*)?>/giu;
+  /<\/?(?:form_data|cv_file|untrusted_cv_text|untrusted_page|enrichment|system|developer|assistant|user|tool)(?:\s[^>]*)?>/giu;
 
 const INJECTION_PATTERNS = [
   {

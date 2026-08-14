@@ -77,6 +77,7 @@ class GitHubClient {
   constructor(
     private readonly token: string,
     private readonly fetcher: typeof fetch,
+    private readonly signal?: AbortSignal,
   ) {}
 
   async get<T>(path: string): Promise<T>;
@@ -100,7 +101,9 @@ class GitHubClient {
         "User-Agent": "Applyzer",
         "X-GitHub-Api-Version": "2022-11-28",
       },
-      signal: AbortSignal.timeout(10_000),
+      signal: this.signal
+        ? AbortSignal.any([this.signal, AbortSignal.timeout(10_000)])
+        : AbortSignal.timeout(10_000),
     });
 
     if (response.status === 404 && options?.allow404) return null;
@@ -331,7 +334,7 @@ function publicError(error: unknown) {
 
 export async function enrichGitHubLinks(
   links: string[],
-  options?: { token?: string; fetcher?: typeof fetch },
+  options?: { token?: string; fetcher?: typeof fetch; signal?: AbortSignal },
 ): Promise<GitHubEnrichmentResult[]> {
   const startedAt = Date.now();
   const parsed = links.flatMap((url) => {
@@ -357,7 +360,11 @@ export async function enrichGitHubLinks(
     groups.set(key, [...(groups.get(key) ?? []), item]);
   }
   const results: GitHubEnrichmentResult[] = [];
-  const client = new GitHubClient(token, options?.fetcher ?? fetch);
+  const client = new GitHubClient(
+    token,
+    options?.fetcher ?? fetch,
+    options?.signal,
+  );
 
   for (const [username, references] of groups) {
     const groupStartedAt = Date.now();
