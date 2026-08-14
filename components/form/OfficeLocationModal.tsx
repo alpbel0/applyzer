@@ -75,7 +75,7 @@ export function OfficeLocationModal() {
 
       {isOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d1427]/65 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--ink)]/65 p-4 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.currentTarget === event.target) setIsOpen(false);
           }}
@@ -85,16 +85,16 @@ export function OfficeLocationModal() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="office-location-title"
-            className="w-full max-w-2xl overflow-hidden rounded-[1.75rem] bg-white shadow-2xl"
+            className="w-full max-w-2xl overflow-hidden rounded-[1.5rem] bg-[color:var(--surface)] shadow-2xl"
           >
             <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4">
               <div>
-                <p className="mb-1 text-xs font-bold tracking-[0.18em] text-[#b46b09] uppercase">
+                <p className="mb-1 text-xs font-bold tracking-[0.14em] text-[color:var(--honey-deep)] uppercase">
                   Ankara · Balgat
                 </p>
                 <h2
                   id="office-location-title"
-                  className="text-2xl font-bold text-[#16213e]"
+                  className="font-display text-2xl text-[color:var(--ink)]"
                 >
                   Kovan ofisi
                 </h2>
@@ -103,7 +103,7 @@ export function OfficeLocationModal() {
                 ref={closeRef}
                 type="button"
                 aria-label="Konum penceresini kapat"
-                className="flex size-10 items-center justify-center rounded-full bg-[#f2f0e9] text-xl text-[#3e4658] hover:bg-[#e8e5dc] focus-visible:ring-2 focus-visible:ring-[#16213e] focus-visible:outline-none"
+                className="flex size-10 items-center justify-center rounded-full bg-[color:var(--paper)] text-xl text-[color:var(--ink)] hover:bg-[color:var(--line)] focus-visible:ring-2 focus-visible:ring-[color:var(--ink)] focus-visible:outline-none"
                 onClick={() => setIsOpen(false)}
               >
                 ×
@@ -112,19 +112,19 @@ export function OfficeLocationModal() {
             <iframe
               title="Kovan ofis konumu"
               src={MAP_EMBED_URL}
-              className="h-72 w-full border-y border-[#e7e5df]"
+              className="h-72 w-full border-y border-[color:var(--line)]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
             <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-              <p className="max-w-md text-sm leading-6 text-[#555e70]">
+              <p className="max-w-md text-sm leading-6 text-[color:var(--ink-soft)]">
                 {OFFICE_ADDRESS}
               </p>
               <a
                 href={MAPS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[#16213e] px-5 text-sm font-semibold text-white hover:bg-[#0f1930] focus-visible:ring-2 focus-visible:ring-[#16213e] focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[color:var(--ink)] px-5 text-sm font-semibold text-[color:var(--paper)] hover:bg-[#0b0d13] focus-visible:ring-2 focus-visible:ring-[color:var(--ink)] focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 Google Maps’te aç ↗
               </a>

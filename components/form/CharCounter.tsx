@@ -8,7 +8,7 @@ export function CharCounter({ current, maximum }: CharCounterProps) {
 
   return (
     <span
-      className={`text-xs tabular-nums ${nearLimit ? "font-semibold text-[#a85d00]" : "text-[#777f90]"}`}
+      className={`font-data text-xs ${nearLimit ? "font-semibold text-[color:var(--honey-deep)]" : "text-[color:var(--ink-faint)]"}`}
       aria-live="polite"
     >
       {current}/{maximum}

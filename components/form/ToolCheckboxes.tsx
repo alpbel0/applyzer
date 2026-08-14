@@ -11,13 +11,13 @@ export function ToolCheckboxes() {
         {BONUS_TOOLS.map((tool) => (
           <label
             key={tool}
-            className="group flex min-h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-[#dedfdc] bg-[#fbfaf6] px-3 py-2.5 text-sm font-medium text-[#3e4658] transition hover:border-[#c9c8c1] has-checked:border-[#e9a23b] has-checked:bg-[#fff6e7] has-checked:text-[#7a4300]"
+            className="group flex min-h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2.5 text-sm font-medium text-[color:var(--ink)] transition hover:border-[color:var(--ink-faint)] has-checked:border-[color:var(--honey)] has-checked:bg-[color:var(--honey-tint)] has-checked:text-[color:var(--honey-deep)]"
           >
             <input
               type="checkbox"
               name="bonus_tools"
               value={tool}
-              className="size-4 rounded border-[#b9bdc7] accent-[#e49626]"
+              className="size-4 rounded border-[color:var(--line)] accent-[color:var(--honey)]"
             />
             <span>{tool}</span>
           </label>

@@ -45,3 +45,12 @@ next-env.d.ts
 /docs
 CLAUDE.md
 AGENTS.md
+
+# local report inputs and generated artifacts
+/report/assets/
+/report/private-config.tex
+/output/pdf/
+/tmp/pdfs/
+
+/.maestro
+/report

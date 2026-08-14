@@ -6,11 +6,11 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants = {
   primary:
-    "bg-[#16213e] text-white shadow-[0_12px_30px_rgba(22,33,62,0.2)] hover:bg-[#0f1930] focus-visible:ring-[#16213e]",
+    "bg-[color:var(--ink)] text-[color:var(--paper)] hover:bg-[#0b0d13] focus-visible:ring-[color:var(--ink)]",
   secondary:
-    "border border-[#d7d9df] bg-white text-[#16213e] hover:border-[#16213e] hover:bg-[#f8f7f2] focus-visible:ring-[#16213e]",
+    "border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--ink)] hover:border-[color:var(--ink)] hover:bg-[color:var(--paper)] focus-visible:ring-[color:var(--ink)]",
   ghost:
-    "bg-transparent text-[#596174] hover:bg-[#f2f0e9] focus-visible:ring-[#16213e]",
+    "bg-transparent text-[color:var(--ink-soft)] hover:bg-[color:var(--paper)] focus-visible:ring-[color:var(--ink)]",
 } as const;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

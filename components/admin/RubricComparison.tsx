@@ -27,7 +27,7 @@ export function RubricComparison({
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[34rem] text-left text-sm">
-        <thead className="text-xs tracking-[0.08em] text-[#818795] uppercase">
+        <thead className="text-xs tracking-[0.08em] text-[color:var(--ink-faint)] uppercase">
           <tr>
             <th className="pb-3 font-bold">Rubric</th>
             <th className="pb-3 font-bold">Skor</th>
@@ -43,23 +43,25 @@ export function RubricComparison({
             return (
               <tr
                 key={evaluation.id}
-                className="border-t border-[#e8e7e1] text-[#4f596c]"
+                className="border-t border-[color:var(--line)] text-[color:var(--ink-soft)]"
               >
-                <td className="py-3 font-black text-[#16213e]">
+                <td className="font-data py-3 font-bold text-[color:var(--ink)]">
                   #{evaluation.rubric_version_id}
                   {evaluation.id === current.id ? (
-                    <span className="ml-2 text-xs text-[#26704a]">Güncel</span>
+                    <span className="ml-2 text-xs text-[color:var(--good)]">
+                      Güncel
+                    </span>
                   ) : null}
                 </td>
-                <td className="py-3 font-black tabular-nums">
+                <td className="font-data py-3 font-bold text-[color:var(--ink)]">
                   {evaluation.final_score.toFixed(2)}
                 </td>
-                <td className="py-3 tabular-nums">
+                <td className="font-data py-3">
                   {evaluation.id === current.id
                     ? "—"
                     : `${difference > 0 ? "+" : ""}${difference.toFixed(2)}`}
                 </td>
-                <td className="py-3 font-semibold tabular-nums">
+                <td className="font-data py-3 font-semibold">
                   {evaluation.rank
                     ? `${evaluation.rank}/${evaluation.ranked_candidate_count}`
                     : "—"}

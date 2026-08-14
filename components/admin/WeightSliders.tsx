@@ -82,7 +82,7 @@ export function WeightSliders({
             <label htmlFor={`weight-${key}`} className="text-sm font-bold">
               {labels[key]}
             </label>
-            <span className="rounded-lg bg-[#f2efe6] px-2.5 py-1 text-sm font-black tabular-nums">
+            <span className="font-data rounded-lg bg-[color:var(--paper)] px-2.5 py-1 text-sm font-bold text-[color:var(--ink)]">
               %{weights[key]}
             </span>
           </div>
@@ -99,26 +99,26 @@ export function WeightSliders({
                 [key]: Number(event.target.value),
               }))
             }
-            className="w-full accent-[#d88417]"
+            className="w-full accent-[color:var(--honey)]"
           />
         </div>
       ))}
 
-      <div className="rounded-2xl border border-[#dedfdc] bg-[#f8f7f2] p-4">
+      <div className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--paper)] p-4">
         <div className="flex items-center justify-between">
-          <span className="font-bold">Toplam</span>
+          <span className="font-bold text-[color:var(--ink)]">Toplam</span>
           <span
-            className={
+            className={`font-data font-bold ${
               total === 100
-                ? "font-black text-[#26704a]"
-                : "font-black text-[#b33c3c]"
-            }
+                ? "text-[color:var(--good)]"
+                : "text-[color:var(--bad)]"
+            }`}
           >
             %{total}
           </span>
         </div>
         {total !== 100 ? (
-          <p className="mt-2 text-xs font-semibold text-[#ad4141]">
+          <p className="mt-2 text-xs font-semibold text-[color:var(--bad)]">
             Kaydetmek için toplam tam %100 olmalıdır.
           </p>
         ) : null}
@@ -139,7 +139,7 @@ export function WeightSliders({
       </div>
 
       {message ? (
-        <p role="status" className="text-sm font-semibold">
+        <p role="status" className="text-sm font-semibold text-[color:var(--ink)]">
           {message}
         </p>
       ) : null}

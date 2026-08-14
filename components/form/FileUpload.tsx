@@ -28,10 +28,10 @@ export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
       <div
         className={`mt-2 rounded-2xl border-2 border-dashed p-5 text-center transition ${
           isDragging
-            ? "border-[#e49626] bg-[#fff6e7]"
+            ? "border-[color:var(--honey)] bg-[color:var(--honey-tint)]"
             : error
-              ? "border-[#d85252] bg-[#fff8f8]"
-              : "border-[#d7d8d4] bg-[#fbfaf6] hover:border-[#aeb2bd]"
+              ? "border-[color:var(--bad)] bg-[color:var(--bad-tint)]"
+              : "border-[color:var(--line)] bg-[color:var(--paper)] hover:border-[color:var(--ink-faint)]"
         }`}
         onDragEnter={(event) => {
           event.preventDefault();
@@ -58,7 +58,7 @@ export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
           aria-invalid={Boolean(error)}
           onChange={(event) => chooseFile(event.target.files?.[0])}
         />
-        <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-xl bg-[#16213e] text-white">
+        <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-xl bg-[color:var(--ink)] text-[color:var(--paper)]">
           <svg
             viewBox="0 0 24 24"
             className="size-5"
@@ -71,27 +71,31 @@ export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
         </div>
         {file ? (
           <div>
-            <p className="font-semibold text-[#16213e]">{file.name}</p>
-            <p className="mt-1 text-xs text-[#6c7485]">
+            <p className="font-semibold text-[color:var(--ink)]">
+              {file.name}
+            </p>
+            <p className="font-data mt-1 text-xs text-[color:var(--ink-soft)]">
               {(file.size / 1024).toFixed(0)} KB
             </p>
           </div>
         ) : (
           <div>
-            <p className="font-semibold text-[#2e374d]">Dosyanı buraya bırak</p>
-            <p className="mt-1 text-sm text-[#747c8c]">
+            <p className="font-semibold text-[color:var(--ink)]">
+              Dosyanı buraya bırak
+            </p>
+            <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
               veya bilgisayarından seç
             </p>
           </div>
         )}
         <button
           type="button"
-          className="mt-4 rounded-lg border border-[#cfd1d8] bg-white px-4 py-2 text-sm font-semibold text-[#29334a] transition hover:border-[#16213e] focus-visible:ring-2 focus-visible:ring-[#16213e] focus-visible:outline-none"
+          className="mt-4 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface)] px-4 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:border-[color:var(--ink)] focus-visible:ring-2 focus-visible:ring-[color:var(--ink)] focus-visible:outline-none"
           onClick={() => inputRef.current?.click()}
         >
           {file ? "Başka dosya seç" : "Dosya seç"}
         </button>
-        <p id="cv-hint" className="mt-3 text-xs text-[#747c8c]">
+        <p id="cv-hint" className="mt-3 text-xs text-[color:var(--ink-soft)]">
           Yalnızca PDF · En fazla {MAX_CV_SIZE_BYTES / 1024 / 1024} MiB
         </p>
       </div>

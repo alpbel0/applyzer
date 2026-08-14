@@ -50,12 +50,12 @@ export function ReevaluateButton({
         type="button"
         disabled={pending || evaluating}
         onClick={reevaluate}
-        className="inline-flex items-center justify-center rounded-xl border border-[#d7b377] bg-[#fff7e9] px-4 py-3 text-sm font-bold text-[#87520b] transition hover:bg-[#ffefd2] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center rounded-xl border border-[color:var(--line)] bg-[color:var(--paper)] px-4 py-3 text-sm font-bold text-[color:var(--ink)] transition hover:border-[color:var(--honey)] hover:bg-[color:var(--honey-tint)] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {pending || evaluating ? "Değerlendiriliyor…" : "Yeniden değerlendir"}
+        {pending || evaluating ? "Değerlendiriliyor…" : "↻ Yeniden değerlendir"}
       </button>
       {error ? (
-        <p role="alert" className="mt-2 text-xs font-semibold text-[#ad3d3d]">
+        <p role="alert" className="mt-2 text-xs font-semibold text-[color:var(--bad)]">
           {error}
         </p>
       ) : null}

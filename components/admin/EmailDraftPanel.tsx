@@ -32,7 +32,7 @@ export function EmailDraftPanel({
 
   if (!current) {
     return (
-      <p className="text-sm leading-6 text-[#7d8492]">
+      <p className="text-sm leading-6 text-[color:var(--ink-soft)]">
         Bu değerlendirme için henüz mail taslağı bulunmuyor.
       </p>
     );
@@ -114,7 +114,7 @@ export function EmailDraftPanel({
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <label className="block text-sm font-bold text-[#3f4960]">
+        <label className="block text-sm font-bold text-[color:var(--ink)]">
           Taslak tipi
           <select
             value={current.draft_type}
@@ -122,7 +122,7 @@ export function EmailDraftPanel({
             onChange={(event) =>
               void changeDraftType(event.target.value as Recommendation)
             }
-            className="mt-2 block w-full rounded-xl border border-[#d9dcd8] bg-white px-3 py-2.5 text-sm disabled:opacity-60"
+            className="form-control mt-2 py-2.5 disabled:opacity-60"
           >
             {Object.entries(labels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -135,7 +135,7 @@ export function EmailDraftPanel({
           type="button"
           disabled={pending || current.is_sent}
           onClick={() => void send()}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#16213e] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#263353] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[color:var(--ink)] px-5 py-2.5 text-sm font-bold text-[color:var(--paper)] transition hover:bg-[#0b0d13] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending
             ? "İşleniyor…"
@@ -146,39 +146,41 @@ export function EmailDraftPanel({
       </div>
 
       {demoMode && !current.is_sent ? (
-        <p className="mt-4 rounded-xl bg-[#fff3df] px-4 py-3 text-xs font-semibold text-[#87520b]">
+        <p className="mt-4 rounded-xl bg-[color:var(--wait-tint)] px-4 py-3 text-xs font-semibold text-[color:var(--wait)]">
           Demo modu açık: gerçek aday adresi yerine test Gmail hesabı
           kullanılacak.
         </p>
       ) : null}
 
-      <div className="mt-5 rounded-2xl border border-[#e1e2de] bg-[#fbfbf8] p-5">
-        <p className="text-xs font-bold tracking-[0.08em] text-[#858b97] uppercase">
+      <div className="mt-5 rounded-2xl border border-[color:var(--line)] bg-[color:var(--paper)] p-5">
+        <p className="text-xs font-bold tracking-[0.08em] text-[color:var(--ink-faint)] uppercase">
           Konu
         </p>
-        <p className="mt-2 font-bold text-[#16213e]">{current.subject}</p>
-        <div className="my-4 h-px bg-[#e1e2de]" />
-        <p className="text-xs font-bold tracking-[0.08em] text-[#858b97] uppercase">
+        <p className="mt-2 font-bold text-[color:var(--ink)]">
+          {current.subject}
+        </p>
+        <div className="my-4 h-px bg-[color:var(--line)]" />
+        <p className="text-xs font-bold tracking-[0.08em] text-[color:var(--ink-faint)] uppercase">
           İçerik
         </p>
-        <p className="mt-2 text-sm leading-6 whitespace-pre-wrap text-[#3f4960]">
+        <p className="mt-2 text-sm leading-6 whitespace-pre-wrap text-[color:var(--ink)]">
           {current.body}
         </p>
       </div>
 
       {current.is_sent && current.sent_at ? (
-        <p className="mt-4 text-sm font-bold text-[#2d7652]">
+        <p className="mt-4 text-sm font-bold text-[color:var(--good)]">
           Gönderildi{current.demo_mode ? " (demo)" : ""} ·{" "}
           {formatDate(current.sent_at)}
         </p>
       ) : null}
       {current.error ? (
-        <p className="mt-3 text-sm font-semibold text-[#ad3d3d]">
+        <p className="mt-3 text-sm font-semibold text-[color:var(--bad)]">
           Son hata: {current.error}
         </p>
       ) : null}
       {error ? (
-        <p role="alert" className="mt-3 text-sm font-semibold text-[#ad3d3d]">
+        <p role="alert" className="mt-3 text-sm font-semibold text-[color:var(--bad)]">
           {error}
         </p>
       ) : null}

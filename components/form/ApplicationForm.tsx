@@ -131,9 +131,7 @@ export function ApplicationForm() {
         return;
       }
 
-      router.push(
-        `/tesekkurler?application_number=${encodeURIComponent(payload.application_number)}`,
-      );
+      router.push("/tesekkurler");
     } catch {
       setGeneralError(
         "Bağlantı kurulamadı. İnternet bağlantını kontrol edip yeniden dene.",
@@ -456,12 +454,12 @@ export function ApplicationForm() {
             }}
           />
 
-          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#dedfdc] bg-[#fbfaf6] p-4 text-sm leading-6 text-[#4c5568] transition has-checked:border-[#e2a243] has-checked:bg-[#fff8eb]">
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[color:var(--line)] bg-[color:var(--paper)] p-4 text-sm leading-6 text-[color:var(--ink)] transition has-checked:border-[color:var(--honey)] has-checked:bg-[color:var(--honey-tint)]">
             <input
               type="checkbox"
               name="privacy_consent"
               value="true"
-              className="mt-1 size-4 shrink-0 accent-[#e49626]"
+              className="mt-1 size-4 shrink-0 accent-[color:var(--honey)]"
               aria-invalid={Boolean(firstError(errors, "privacy_consent"))}
               aria-describedby={
                 firstError(errors, "privacy_consent")
@@ -489,20 +487,20 @@ export function ApplicationForm() {
       {generalError ? (
         <div
           role="alert"
-          className="rounded-2xl border border-[#efc0c0] bg-[#fff5f5] px-4 py-3 text-sm font-medium text-[#9d3030]"
+          className="rounded-2xl border border-[color:var(--bad)]/30 bg-[color:var(--bad-tint)] px-4 py-3 text-sm font-medium text-[color:var(--bad)]"
         >
           {generalError}
         </div>
       ) : null}
 
-      <div className="rounded-2xl bg-[#16213e] p-5 text-white sm:flex sm:items-center sm:justify-between sm:gap-6">
-        <p className="text-sm leading-6 text-white/70">
-          Gönderimden sonra başvuru numaranı ekranda göreceksin.
+      <div className="rounded-2xl bg-[color:var(--ink)] p-5 text-[color:var(--paper)] sm:flex sm:items-center sm:justify-between sm:gap-6">
+        <p className="text-sm leading-6 text-[color:var(--paper)]/70">
+          Başvurun alındığında değerlendirme süreci arka planda başlayacak.
         </p>
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="mt-4 w-full bg-[#f0a43a] text-[#16213e] shadow-none hover:bg-[#ffb753] focus-visible:ring-[#f0a43a] sm:mt-0 sm:w-auto sm:min-w-44"
+          className="mt-4 w-full bg-[color:var(--honey)] text-[color:var(--ink)] shadow-none hover:bg-[#e59a40] focus-visible:ring-[color:var(--honey)] sm:mt-0 sm:w-auto sm:min-w-44"
         >
           {isSubmitting ? (
             <>

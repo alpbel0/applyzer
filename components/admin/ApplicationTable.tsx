@@ -14,9 +14,9 @@ const recommendationLabels: Record<Recommendation, string> = {
 };
 
 const recommendationStyles: Record<Recommendation, string> = {
-  yes: "bg-[#dff2e7] text-[#216844]",
-  maybe: "bg-[#fff0d6] text-[#9a5b08]",
-  no: "bg-[#f8e5e5] text-[#9e3636]",
+  yes: "bg-[color:var(--good-tint)] text-[color:var(--good)]",
+  maybe: "bg-[color:var(--wait-tint)] text-[color:var(--wait)]",
+  no: "bg-[color:var(--bad-tint)] text-[color:var(--bad)]",
 };
 
 const departmentLabels = {
@@ -64,8 +64,8 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
 
   return (
     <div>
-      <div className="flex flex-col gap-3 border-b border-[#e2e3df] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-[#707887]">
+      <div className="flex flex-col gap-3 border-b border-[color:var(--line)] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-[color:var(--ink-soft)]">
           {visibleRows.length} / {rows.length} başvuru
           {hasActiveRows ? " · Aktif değerlendirmeler 5 sn’de yenileniyor" : ""}
         </p>
@@ -104,7 +104,7 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
 
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse text-left text-sm">
-          <thead className="bg-[#f7f6f1] text-xs tracking-[0.08em] text-[#747b89] uppercase">
+          <thead className="bg-[color:var(--paper)] text-xs tracking-[0.08em] text-[color:var(--ink-faint)] uppercase">
             <tr>
               <th className="px-5 py-3 font-bold">Başvuru</th>
               <th className="px-5 py-3 font-bold">Aday</th>
@@ -116,13 +116,13 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
               <th className="px-5 py-3 text-right font-bold">İncele</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#ecece8]">
+          <tbody className="divide-y divide-[color:var(--line)]">
             {visibleRows.map((row) => (
               <tr
                 key={row.id}
-                className="bg-white transition hover:bg-[#fffdf8]"
+                className="bg-[color:var(--surface)] transition hover:bg-[color:var(--paper)]"
               >
-                <td className="px-5 py-4 font-black text-[#28334b]">
+                <td className="font-data px-5 py-4 font-bold text-[color:var(--honey-deep)]">
                   <Link href={`/admin/${row.id}`} className="hover:underline">
                     #{row.application_number}
                   </Link>
@@ -130,27 +130,27 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
                 <td className="min-w-56 px-5 py-4">
                   <Link
                     href={`/admin/${row.id}`}
-                    className="font-bold text-[#24304a] hover:underline"
+                    className="font-bold text-[color:var(--ink)] hover:underline"
                   >
                     {row.full_name}
                   </Link>
-                  <p className="mt-1 max-w-64 truncate text-xs text-[#7a8190]">
+                  <p className="mt-1 max-w-64 truncate text-xs text-[color:var(--ink-soft)]">
                     {row.department_year}
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {row.duplicate_number ? (
-                      <span className="rounded-full bg-[#eceaf7] px-2 py-0.5 text-[0.68rem] font-bold text-[#64558d]">
+                      <span className="rounded-full bg-[color:var(--paper)] px-2 py-0.5 text-[0.68rem] font-bold text-[color:var(--ink-soft)]">
                         {row.duplicate_number}. başvuru
                       </span>
                     ) : null}
                     {row.injection_detected ? (
-                      <span className="rounded-full bg-[#fee7cf] px-2 py-0.5 text-[0.68rem] font-bold text-[#9b5207]">
+                      <span className="rounded-full bg-[color:var(--wait-tint)] px-2 py-0.5 text-[0.68rem] font-bold text-[color:var(--wait)]">
                         Güvenlik uyarısı
                       </span>
                     ) : null}
                   </div>
                 </td>
-                <td className="px-5 py-4 text-lg font-black tabular-nums">
+                <td className="font-data px-5 py-4 text-lg font-bold text-[color:var(--ink)]">
                   {row.final_score === null ? "—" : row.final_score.toFixed(2)}
                 </td>
                 <td className="px-5 py-4">
@@ -164,7 +164,7 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
                     "—"
                   )}
                 </td>
-                <td className="px-5 py-4 text-[#515a6d]">
+                <td className="px-5 py-4 text-[color:var(--ink-soft)]">
                   {row.department_fit
                     ? departmentLabels[row.department_fit]
                     : "—"}
@@ -172,7 +172,7 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
                 <td className="px-5 py-4">
                   <StatusBadge status={row.status} />
                 </td>
-                <td className="px-5 py-4 whitespace-nowrap text-[#626b7c]">
+                <td className="px-5 py-4 whitespace-nowrap text-[color:var(--ink-soft)]">
                   {new Intl.DateTimeFormat("tr-TR", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -182,7 +182,7 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
                   <Link
                     href={`/admin/${row.id}`}
                     aria-label={`${row.full_name} başvurusunun detayını aç`}
-                    className="inline-flex items-center rounded-xl border border-[#d7d9df] bg-white px-3 py-2 text-xs font-bold text-[#29354e] transition hover:border-[#16213e] hover:bg-[#16213e] hover:text-white focus-visible:ring-3 focus-visible:ring-[#16213e]/20 focus-visible:outline-none"
+                    className="inline-flex items-center rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-xs font-bold text-[color:var(--ink)] transition hover:border-[color:var(--ink)] hover:bg-[color:var(--ink)] hover:text-[color:var(--paper)] focus-visible:ring-3 focus-visible:ring-[color:var(--ink)]/20 focus-visible:outline-none"
                   >
                     Detayı aç →
                   </Link>
@@ -192,7 +192,7 @@ export function ApplicationTable({ rows }: { rows: AdminApplicationRow[] }) {
           </tbody>
         </table>
         {visibleRows.length === 0 ? (
-          <p className="px-5 py-12 text-center text-sm text-[#7a8190]">
+          <p className="px-5 py-12 text-center text-sm text-[color:var(--ink-soft)]">
             Bu filtreyle eşleşen başvuru yok.
           </p>
         ) : null}
