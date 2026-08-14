@@ -127,6 +127,15 @@ try {
     const embeddedResource = embeddedCv.content?.find(
       (item) => item.type === "resource",
     );
+    const textCv = await client.callTool({
+      name: "get_application_cv",
+      arguments: {
+        application_id: first.id,
+        delivery: "text",
+        max_characters: 100_000,
+      },
+    });
+    const textBlocks = textCv.content?.filter((item) => item.type === "text");
     extendedVerification = {
       search: parseTextResult(searchResult)?.count === 1,
       summary: Number.isInteger(parseTextResult(summaryResult)?.total),
@@ -136,6 +145,9 @@ try {
       cvEmbedded:
         embeddedResource?.resource?.mimeType === "application/pdf" &&
         Boolean(embeddedResource.resource.blob),
+      cvText:
+        textCv.isError !== true &&
+        textBlocks?.some((item) => item.text.includes("<untrusted_cv_text>")),
       comparison: comparison ? comparison.isError !== true : "skipped",
       toolAnnotations: tools.every(
         (tool) => tool.title && tool.annotations?.readOnlyHint !== undefined,

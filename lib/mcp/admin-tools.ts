@@ -1,11 +1,16 @@
 import "server-only";
 
+import { extractPdfLinkMaterial } from "@/lib/cv/parse";
 import { createSupabaseAdminClient } from "@/lib/db/client";
 import {
   getAdminApplicationDetail,
   getAdminApplications,
   type AdminApplicationRow,
 } from "@/lib/db/admin";
+import {
+  detectPromptInjection,
+  sanitizeUntrustedText,
+} from "@/lib/evaluation/sanitize";
 
 const CV_SIGNED_URL_DURATION_SECONDS = 300;
 export const MAX_EMBEDDED_CV_SIZE_BYTES = 2.5 * 1024 * 1024;
@@ -181,5 +186,46 @@ export async function getAdminCvContent(applicationId: string) {
     file_name: application.cv_file_name,
     byte_size: data.size,
     base64: Buffer.from(await data.arrayBuffer()).toString("base64"),
+  };
+}
+
+export async function getAdminCvText(
+  applicationId: string,
+  maxCharacters: number,
+) {
+  const supabase = createSupabaseAdminClient();
+  const { data: application, error: applicationError } = await supabase
+    .from("applications")
+    .select("id, application_number, full_name, cv_file_name, cv_storage_path")
+    .eq("id", applicationId)
+    .maybeSingle();
+  if (applicationError) throw applicationError;
+  if (!application) return null;
+
+  const { data, error } = await supabase.storage
+    .from("cvs")
+    .download(application.cv_storage_path);
+  if (error || !data) throw error ?? new Error("CV could not be downloaded.");
+  const material = await extractPdfLinkMaterial(
+    new Uint8Array(await data.arrayBuffer()),
+  );
+  const fullText = sanitizeUntrustedText(material.text).trim();
+  if (!fullText) {
+    throw new Error(
+      "PDF'de seçilebilir metin bulunamadı. CV taranmış/görsel olabilir; kayıtlı değerlendirme özetini kullanın.",
+    );
+  }
+  const text = fullText.slice(0, maxCharacters);
+  return {
+    application_id: application.id,
+    application_number: application.application_number,
+    candidate_name: application.full_name,
+    file_name: application.cv_file_name,
+    text,
+    original_character_count: fullText.length,
+    returned_character_count: text.length,
+    truncated: text.length < fullText.length,
+    embedded_urls: material.embeddedUrls,
+    injection_detection: detectPromptInjection([fullText]),
   };
 }
