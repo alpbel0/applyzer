@@ -71,9 +71,7 @@ export function FileUpload({ error, file, onFileChange }: FileUploadProps) {
         </div>
         {file ? (
           <div>
-            <p className="font-semibold text-[color:var(--ink)]">
-              {file.name}
-            </p>
+            <p className="font-semibold text-[color:var(--ink)]">{file.name}</p>
             <p className="font-data mt-1 text-xs text-[color:var(--ink-soft)]">
               {(file.size / 1024).toFixed(0)} KB
             </p>

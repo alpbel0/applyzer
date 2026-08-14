@@ -55,7 +55,10 @@ export function ReevaluateButton({
         {pending || evaluating ? "Değerlendiriliyor…" : "↻ Yeniden değerlendir"}
       </button>
       {error ? (
-        <p role="alert" className="mt-2 text-xs font-semibold text-[color:var(--bad)]">
+        <p
+          role="alert"
+          className="mt-2 text-xs font-semibold text-[color:var(--bad)]"
+        >
           {error}
         </p>
       ) : null}

@@ -12,10 +12,7 @@ import { ReevaluateButton } from "@/components/admin/ReevaluateButton";
 import { RubricComparison } from "@/components/admin/RubricComparison";
 import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/lib/auth/admin";
-import {
-  getAdminApplicationDetail,
-  type Recommendation,
-} from "@/lib/db/admin";
+import { getAdminApplicationDetail, type Recommendation } from "@/lib/db/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -274,10 +271,7 @@ export default async function ApplicationDetailPage({
         value={application.bonus_tools.join(", ") || null}
       />
       <TextBlock label="Bağlantılar" value={application.links} />
-      <TextBlock
-        label="Kendini tanıt"
-        value={application.self_introduction}
-      />
+      <TextBlock label="Kendini tanıt" value={application.self_introduction} />
       <TextBlock
         label="LLM / agent deneyimi"
         value={application.llm_experience}
@@ -415,9 +409,9 @@ export default async function ApplicationDetailPage({
               Prompt injection şüphesi
             </p>
             <p className="mt-2 text-sm leading-6 text-[color:var(--wait)]">
-              Aday girdisinde değerlendirme talimatlarını etkilemeye yönelik
-              bir sinyal tespit edildi. Bu uyarı puanı veya öneriyi otomatik
-              olarak değiştirmez.
+              Aday girdisinde değerlendirme talimatlarını etkilemeye yönelik bir
+              sinyal tespit edildi. Bu uyarı puanı veya öneriyi otomatik olarak
+              değiştirmez.
             </p>
             {latest.injection_note ? (
               <p className="mt-2 text-sm font-semibold text-[color:var(--wait)]">

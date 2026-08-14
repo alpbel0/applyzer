@@ -9,13 +9,7 @@ type Tab = {
   content: ReactNode;
 };
 
-export function DetailTabs({
-  rail,
-  tabs,
-}: {
-  rail: ReactNode;
-  tabs: Tab[];
-}) {
+export function DetailTabs({ rail, tabs }: { rail: ReactNode; tabs: Tab[] }) {
   const [activeId, setActiveId] = useState(tabs[0]?.id);
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
 

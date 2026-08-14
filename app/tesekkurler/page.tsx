@@ -7,7 +7,7 @@ export default function ThankYouPage() {
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[color:var(--paper)] px-5 py-12">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_50rem_36rem_at_50%_20%,black,transparent)] bg-[radial-gradient(circle_at_1px_1px,rgba(20,23,31,0.09)_1px,transparent_0)] bg-[size:22px_22px]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(20,23,31,0.09)_1px,transparent_0)] [mask-image:radial-gradient(ellipse_50rem_36rem_at_50%_20%,black,transparent)] bg-[size:22px_22px]"
       />
       <Card className="relative w-full max-w-xl p-7 text-center sm:p-12">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-[color:var(--ink)]">
@@ -28,8 +28,8 @@ export default function ThankYouPage() {
           Başvurun için teşekkürler.
         </h1>
         <p className="mx-auto mt-4 max-w-md text-base leading-7 text-[color:var(--ink-soft)]">
-          Başvurunu değerlendirdikten sonra seninle e-posta üzerinden
-          iletişime geçeceğiz.
+          Başvurunu değerlendirdikten sonra seninle e-posta üzerinden iletişime
+          geçeceğiz.
         </p>
 
         <Link

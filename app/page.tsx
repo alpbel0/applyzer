@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[color:var(--paper)]">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_60rem_40rem_at_20%_0%,black,transparent)] bg-[radial-gradient(circle_at_1px_1px,rgba(20,23,31,0.09)_1px,transparent_0)] bg-[size:22px_22px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(20,23,31,0.09)_1px,transparent_0)] [mask-image:radial-gradient(ellipse_60rem_40rem_at_20%_0%,black,transparent)] bg-[size:22px_22px]" />
         <svg
           className="absolute top-[-60px] right-[-60px] size-[420px] opacity-40"
           viewBox="0 0 200 200"
@@ -65,9 +65,7 @@ export default function Home() {
               ["Ücretli", "Pozisyon"],
             ].map(([value, label]) => (
               <Badge key={value}>
-                <span className="mr-1.5 text-[color:var(--ink)]">
-                  {value}
-                </span>
+                <span className="mr-1.5 text-[color:var(--ink)]">{value}</span>
                 <span className="font-normal text-[color:var(--ink-faint)]">
                   · {label}
                 </span>

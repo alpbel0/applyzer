@@ -49,9 +49,7 @@ export default async function AdminPage() {
                 >
                   {value}
                 </p>
-                <p className="text-xs text-[color:var(--ink-soft)]">
-                  {label}
-                </p>
+                <p className="text-xs text-[color:var(--ink-soft)]">{label}</p>
               </div>
             ))}
           </div>

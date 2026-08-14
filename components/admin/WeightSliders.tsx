@@ -139,7 +139,10 @@ export function WeightSliders({
       </div>
 
       {message ? (
-        <p role="status" className="text-sm font-semibold text-[color:var(--ink)]">
+        <p
+          role="status"
+          className="text-sm font-semibold text-[color:var(--ink)]"
+        >
           {message}
         </p>
       ) : null}

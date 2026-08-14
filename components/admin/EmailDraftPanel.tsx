@@ -180,7 +180,10 @@ export function EmailDraftPanel({
         </p>
       ) : null}
       {error ? (
-        <p role="alert" className="mt-3 text-sm font-semibold text-[color:var(--bad)]">
+        <p
+          role="alert"
+          className="mt-3 text-sm font-semibold text-[color:var(--bad)]"
+        >
           {error}
         </p>
       ) : null}
