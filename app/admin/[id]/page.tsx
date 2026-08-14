@@ -83,25 +83,27 @@ export default async function ApplicationDetailPage({
   const rail = (
     <>
       {latest ? (
-        <div className="rounded-2xl bg-[color:var(--ink)] p-5 text-[color:var(--paper)]">
-          <p className="text-xs text-[color:var(--paper)]/55">Nihai skor</p>
-          <p className="font-data mt-1 text-4xl font-bold">
+        <div className="rounded-2xl border border-[color:var(--honey)]/35 bg-[color:var(--honey-tint)] p-5">
+          <p className="text-xs font-semibold text-[color:var(--honey-deep)]">
+            Nihai skor
+          </p>
+          <p className="font-data mt-1 text-4xl font-bold text-[color:var(--ink)]">
             {latest.final_score.toFixed(2)}
           </p>
-          <div className="mt-4 flex gap-4 border-t border-white/10 pt-4">
+          <div className="mt-4 flex gap-4 border-t border-[color:var(--honey)]/25 pt-4">
             <div className="flex-1">
-              <p className="text-[0.65rem] text-[color:var(--paper)]/45">
+              <p className="text-[0.65rem] font-semibold text-[color:var(--honey-deep)]/70">
                 Model önerisi
               </p>
-              <p className="mt-1 text-sm font-bold">
+              <p className="mt-1 text-sm font-bold text-[color:var(--ink)]">
                 {recommendationLabels[latest.model_recommendation]}
               </p>
             </div>
             <div className="flex-1">
-              <p className="text-[0.65rem] text-[color:var(--paper)]/45">
+              <p className="text-[0.65rem] font-semibold text-[color:var(--honey-deep)]/70">
                 Nihai öneri
               </p>
-              <p className="mt-1 text-sm font-bold text-[color:var(--honey)]">
+              <p className="mt-1 text-sm font-bold text-[color:var(--honey-deep)]">
                 {recommendationLabels[latest.final_recommendation]}
               </p>
             </div>
